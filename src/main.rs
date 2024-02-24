@@ -11,12 +11,20 @@ struct Args {
     #[arg(short, long)]
     list: bool,
 
-    /// measure the wight of every folder within the same directory
-    #[arg(short, long)]
+    /// measure the wight of folders
+    #[arg(
+        short,
+        long,
+        long_help = "measure the wight of every single folder within the same directory "
+    )]
     wight: bool,
 
-    /// delete the log folder within your Desktop
-    #[arg(short, long)]
+    /// delete the log
+    #[arg(
+        short,
+        long,
+        long_help = "delete the log folder that contains the update system package within /Desktop/log"
+    )]
     delete: bool,
 }
 
