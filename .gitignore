@@ -12,7 +12,7 @@ Cargo.lock
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
-# for vs code
+# vs code
 .vscode/
-# for jetbrains rustrover
+# jet brains
 .idea/
