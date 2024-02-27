@@ -1,6 +1,7 @@
 use crate::cli;
 use clap::Parser;
 use cli::sysflow::Sys;
+use commandcrafter::execute::Execute;
 
 #[derive(Parser, Debug)]
 pub enum Commands {
@@ -40,10 +41,16 @@ impl Commands {
                     depth,
                 } => {
                     if let (Some(u), Some(r), Some(d)) = (username, repo, depth) {
-                        println!(
-                            "Cloning repository with username '{}' and repo '{}' and depth '{:#?}",
-                            u, r, d
-                        );
+                        // println!(
+                        //    "Cloning repository with username '{}' and repo '{}' and depth '{:#?}",
+                        //    u, r, d
+                        // );
+                        if d == "full" {
+                            println!("hey there you choose the full clone now!");
+                            let clonefmt = format!("git@github.com:{}/{}.git", u, r);
+                            Execute::run("git", &["clone", &clonefmt]);
+                            // TODO: you have to create andother module create to return result to check this command
+                        }
                     } else {
                         println!("Username and repo must be provided for the clone command");
                     }
