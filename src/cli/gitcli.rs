@@ -41,10 +41,6 @@ impl Commands {
                     depth,
                 } => {
                     if let (Some(u), Some(r), Some(d)) = (username, repo, depth) {
-                        // println!(
-                        //    "Cloning repository with username '{}' and repo '{}' and depth '{:#?}",
-                        //    u, r, d
-                        // );
                         if d == "full" {
                             println!("hey there you choose the full clone now!");
                             let clonefmt = format!("git@github.com:{}/{}.git", u, r);
