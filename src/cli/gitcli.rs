@@ -33,7 +33,10 @@ impl Commands {
         let args = Sys::parse();
         if let Some(command) = args.command {
             match command {
-                Commands::Status => println!("git status is done"),
+                Commands::Status => {
+                    let s = Execute::run("git", &["status", "--short"]);
+                    Execute::print_into_console(s)
+                }
                 Commands::Add => println!("git add is done"),
                 Commands::Clone {
                     username,
@@ -44,7 +47,7 @@ impl Commands {
                         if d == "full" {
                             println!("hey there you choose the full clone now!");
                             let clonefmt = format!("git@github.com:{}/{}.git", u, r);
-                            Execute::run("git", &["clone", &clonefmt]);
+                            let _ = Execute::run("git", &["clone", &clonefmt]);
                             // TODO: you have to create andother module create to return result to check this command
                         }
                     } else {
