@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use clap::{Args, Parser, Subcommand};
-use commandcrafter::{color::Col, execute::Execute};
+use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
 use std::{env, fs, process};
 // for subcommand that is gitcli.rs
 use crate::Commands;
@@ -56,6 +56,7 @@ impl Sys {
         // list option command
         if let Some(list) = args.list {
             if list == "pacman" {
+                println!("pacman");
                 let p = Execute::run("pacman", &["-Qu", "--color=always"]);
                 Execute::print_into_console(p);
             } else if list == "yay" {
@@ -72,11 +73,47 @@ impl Sys {
         // update option command
         if let Some(update) = args.update {
             if update == "pacman" {
-                println!("pacman");
+                let r = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
+                match r {
+                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Pacman is updated")),
+                    Err(e) => println!(
+                        "{} {}",
+                        Col::print_col(&Col::Red, "Pacman is not updated: "),
+                        e
+                    ),
+                }
             } else if update == "yay" {
-                println!("yay");
+                let r = Execute::run("yay", &["-Syyu", "--noconfirm"]);
+                match r {
+                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Yay is updated")),
+                    Err(e) => println!(
+                        "{} {}",
+                        Col::print_col(&Col::Red, "Yay is not updated: "),
+                        e
+                    ),
+                }
             } else if update == "both" {
-                println!("both");
+                // pacman update 1st
+                let p = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
+                // match p {
+                //     Ok(_) => println!("{}", Col::print_col(&Col::Green, "Pacman is updated")),
+                //     Err(e) => println!(
+                //         "{} {}",
+                //         Col::print_col(&Col::Red, "Pacman is not updated: "),
+                //         e
+                //     ),
+                // }
+                // yay update 2nd
+                let y = Execute::run("yay", &["-Syyu", "--noconfirm"]);
+                let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
+                match cmb {
+                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG")),
+                    Err(e) => println!(
+                        "{} {}",
+                        Col::print_col(&Col::Red, "Something went wrong: "),
+                        e
+                    ),
+                }
             }
         }
 

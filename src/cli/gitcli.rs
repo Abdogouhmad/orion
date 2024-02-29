@@ -1,7 +1,7 @@
 use crate::cli;
 use clap::Parser;
 use cli::sysflow::Sys;
-use commandcrafter::execute::Execute;
+use commandcrafter::{color::Col, execute::Execute};
 
 #[derive(Parser, Debug)]
 pub enum Commands {
@@ -37,7 +37,23 @@ impl Commands {
                     let s = Execute::run("git", &["status", "--short"]);
                     Execute::print_into_console(s)
                 }
-                Commands::Add => println!("git add is done"),
+                Commands::Add => {
+                    println!("{}", Col::print_col(&Col::Yellow, "ADDING ALL CHANGES..."));
+                    let adding = Execute::run("git", &["add", "."]);
+                    match adding {
+                        Ok(_) => {
+                            println!("{}", Col::print_col(&Col::Green, "ALL CHANGES ARE ADD"))
+                        }
+                        Err(e) => {
+                            println!(
+                                "{} {}",
+                                Col::print_col(&Col::Red, "Something went wrong: "),
+                                e
+                            );
+                            std::process::exit(1);
+                        }
+                    }
+                }
                 Commands::Clone {
                     username,
                     repo,
@@ -45,10 +61,24 @@ impl Commands {
                 } => {
                     if let (Some(u), Some(r), Some(d)) = (username, repo, depth) {
                         if d == "full" {
-                            println!("hey there you choose the full clone now!");
+                            let color = Col::print_col(
+                                &Col::Yellow,
+                                "hey there you choose the full clone now!",
+                            );
+                            println!("{}", color);
                             let clonefmt = format!("git@github.com:{}/{}.git", u, r);
-                            let _ = Execute::run("git", &["clone", &clonefmt]);
-                            // TODO: you have to create andother module create to return result to check this command
+                            let r = Execute::run("git", &["clone", &clonefmt]);
+                            match r {
+                                Ok(_) => {
+                                    println!("{}", Col::print_col(&Col::Green, "repo is cloned"))
+                                }
+                                Err(e) => println!(
+                                    "{} {}",
+                                    Col::print_col(&Col::Red, "something happened: "),
+                                    e
+                                ),
+                            };
+                            // TODO: you have to create another module create to return result to check this command
                         }
                     } else {
                         println!("Username and repo must be provided for the clone command");
