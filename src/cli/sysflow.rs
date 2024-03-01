@@ -1,7 +1,4 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
-
-use clap::{Args, Parser, Subcommand};
+use clap::Parser;
 use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
 use std::{env, fs, process};
 // for subcommand that is gitcli.rs
@@ -56,13 +53,15 @@ impl Sys {
         // list option command
         if let Some(list) = args.list {
             if list == "pacman" {
-                println!("pacman");
+                // list the packages needs to be updated for pacman
                 let p = Execute::run("pacman", &["-Qu", "--color=always"]);
                 Execute::print_into_console(p);
             } else if list == "yay" {
+                // list the packages needs to be updated for yay
                 let y = Execute::run("yay", &["-Qu", "--color=always"]);
                 Execute::print_into_console(y);
             } else if list == "both" {
+                // list the packages needs to be updated for both
                 let p = Execute::run("pacman", &["-Qu", "--color=always"]);
                 let y = Execute::run("yay", &["-Qu", "--color=always"]);
                 let c = vec![p, y];
@@ -73,6 +72,7 @@ impl Sys {
         // update option command
         if let Some(update) = args.update {
             if update == "pacman" {
+                // update pacman packages
                 let r = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
                 match r {
                     Ok(_) => println!("{}", Col::print_col(&Col::Green, "Pacman is updated")),
@@ -83,6 +83,7 @@ impl Sys {
                     ),
                 }
             } else if update == "yay" {
+                // update yay packages
                 let r = Execute::run("yay", &["-Syyu", "--noconfirm"]);
                 match r {
                     Ok(_) => println!("{}", Col::print_col(&Col::Green, "Yay is updated")),
@@ -93,21 +94,16 @@ impl Sys {
                     ),
                 }
             } else if update == "both" {
-                // pacman update 1st
+                // update packages in both yay and pacman
                 let p = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
-                // match p {
-                //     Ok(_) => println!("{}", Col::print_col(&Col::Green, "Pacman is updated")),
-                //     Err(e) => println!(
-                //         "{} {}",
-                //         Col::print_col(&Col::Red, "Pacman is not updated: "),
-                //         e
-                //     ),
-                // }
                 // yay update 2nd
                 let y = Execute::run("yay", &["-Syyu", "--noconfirm"]);
                 let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
                 match cmb {
-                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG")),
+                    Ok(_) => {
+                        println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
+                        let _ = Execute::run("notify-send", &["System is updated"]);
+                    }
                     Err(e) => println!(
                         "{} {}",
                         Col::print_col(&Col::Red, "Something went wrong: "),
@@ -130,7 +126,7 @@ impl Sys {
                 Col::print_col(&Col::Yellow, "deleting log folder in process....")
             );
             // create a patten that match with location of the folder
-            let d = env::var("HOME").unwrap() + "/Desktop/log";
+            let d = env::var("HOME").unwrap() + "/Desktop/logs";
             // remove the folder
             let r = fs::remove_dir_all(d);
             // checking if the folder is deleted if not print an error

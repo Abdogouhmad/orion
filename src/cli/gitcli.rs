@@ -10,8 +10,12 @@ pub enum Commands {
         long_about = "git status is a command that shows the status of the files in the working tree"
     )]
     Status,
-    /// git add is adding the files to the staging
-    Add,
+    /// push changes you made to github
+    Push {
+        /// the commit message
+        #[arg(long, short)]
+        commit: Option<String>,
+    },
 
     /// clone any repo use help Clone to know more
     #[clap(long_about = "clone any repo with username + repo's name and choose Full or 1")]
@@ -33,26 +37,16 @@ impl Commands {
         let args = Sys::parse();
         if let Some(command) = args.command {
             match command {
+                // get the changes you made
                 Commands::Status => {
                     let s = Execute::run("git", &["status", "--short"]);
                     Execute::print_into_console(s)
                 }
-                Commands::Add => {
-                    println!("{}", Col::print_col(&Col::Yellow, "ADDING ALL CHANGES..."));
-                    let adding = Execute::run("git", &["add", "."]);
-                    match adding {
-                        Ok(_) => {
-                            println!("{}", Col::print_col(&Col::Green, "ALL CHANGES ARE ADD"))
-                        }
-                        Err(e) => {
-                            println!(
-                                "{} {}",
-                                Col::print_col(&Col::Red, "Something went wrong: "),
-                                e
-                            );
-                            std::process::exit(1);
-                        }
-                    }
+                Commands::Push { commit } => {
+                    // TODO: git add
+                    // TODO: deal with git commit
+                    // TODO: push the changes based on branch
+                    println!("your commit is: {:?}", commit)
                 }
                 Commands::Clone {
                     username,
@@ -78,7 +72,6 @@ impl Commands {
                                     e
                                 ),
                             };
-                            // TODO: you have to create another module create to return result to check this command
                         }
                     } else {
                         println!("Username and repo must be provided for the clone command");
