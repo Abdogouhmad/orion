@@ -56,7 +56,6 @@ impl Commands {
                 Commands::Push { commit } => {
                     let _ = Execute::run("git", &["add", "."]);
                     let cmt = Commands::git_commit(commit);
-                    // println!("{}", cmt);
                     let _ = Execute::run("git", &["commit", "-m", &cmt]);
                     let r = Execute::run("git", &["push"]);
                     if r.is_ok() {
