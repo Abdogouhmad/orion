@@ -12,8 +12,11 @@ pub enum Commands {
     Status,
     /// push changes you made to github
     Push {
-        /// the commit message
-        #[arg(long, short)]
+        #[arg(
+            long,
+            short,
+            long_help = "capturing the commit msg through assign it as string -c=\"your msg\" "
+        )]
         commit: Option<String>,
     },
 
@@ -33,6 +36,14 @@ pub enum Commands {
 }
 
 impl Commands {
+    fn git_commit(commit: Option<String>) -> String {
+        if let Some(commit_message) = commit {
+            commit_message
+        } else {
+            println!("No commit message provided");
+            std::process::exit(1);
+        }
+    }
     pub fn git_cli() {
         let args = Sys::parse();
         if let Some(command) = args.command {
@@ -43,10 +54,16 @@ impl Commands {
                     Execute::print_into_console(s)
                 }
                 Commands::Push { commit } => {
-                    // TODO: git add
-                    // TODO: deal with git commit
-                    // TODO: push the changes based on branch
-                    println!("your commit is: {:?}", commit)
+                    let _ = Execute::run("git", &["add", "."]);
+                    let cmt = Commands::git_commit(commit);
+                    // println!("{}", cmt);
+                    let r = Execute::run("git", &["commit", "-m", &cmt]);
+                    if r.is_ok() {
+                        println!("code is pushed");
+                    } else {
+                        println!("Something went wrong");
+                        std::process::exit(1)
+                    }
                 }
                 Commands::Clone {
                     username,

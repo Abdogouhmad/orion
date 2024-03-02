@@ -10,7 +10,6 @@ clap = { version = "4.5.1", features = ["derive", "cargo"] }
 commandcrafter = "0.3.2"
 [profile.dev]
 opt-level = 1
-overflow-checks = true
 [profile.release]
 opt-level = 3
-overflow-check = false
+
