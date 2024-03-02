@@ -57,11 +57,15 @@ impl Commands {
                     let _ = Execute::run("git", &["add", "."]);
                     let cmt = Commands::git_commit(commit);
                     // println!("{}", cmt);
-                    let r = Execute::run("git", &["commit", "-m", &cmt]);
+                    let _ = Execute::run("git", &["commit", "-m", &cmt]);
+                    let r = Execute::run("git", &["push"]);
                     if r.is_ok() {
-                        println!("code is pushed");
+                        println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
                     } else {
-                        println!("Something went wrong");
+                        println!(
+                            "{}",
+                            Col::print_col(&Col::Red, "Error happened during pushing")
+                        );
                         std::process::exit(1)
                     }
                 }
