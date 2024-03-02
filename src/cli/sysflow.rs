@@ -6,7 +6,7 @@ use crate::Commands;
 
 /// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
 #[derive(Parser, Debug)]
-#[command(version = "1.0.0", about, long_about)]
+#[command(version = "1.2.0", about, long_about)]
 pub struct Sys {
     /// List pacman or yay packages that need to be updated
     #[arg(short, long)]
