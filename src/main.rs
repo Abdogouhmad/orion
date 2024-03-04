@@ -1,7 +1,7 @@
 mod cli;
-use cli::sysflow::Sys;
-use cli::gitcli::Commands;
+use cli::{gitcli::Commands, sysflow::Sys};
 fn main() {
     Sys::system_flow();
+    Sys::githubcli();
     Commands::git_cli();
 }
