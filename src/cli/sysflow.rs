@@ -35,7 +35,7 @@ pub struct Sys {
     )]
     delete: bool,
 
-    /// status
+    /// provide the files that are in change git status
     #[arg(short, long)]
     status: bool,
 
@@ -159,6 +159,21 @@ impl Sys {
         }
     }
 
+    /// Executes a `git_commit` take the option string and return the string for commit
+    ///
+    /// # Arguments
+    ///
+    /// * `commit` - An optional string containing the commit message. If `None`, the function will print
+    /// an error message and exit with a non-zero status code.
+    ///
+    /// # Errors
+    ///
+    /// If the `git commit` command fails, the function will print an error message and exit with a non-zero
+    /// status code.
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if it fails to execute the `git commit` command.
     fn git_commit(commit: Option<String>) -> String {
         if let Some(commit_message) = commit {
             commit_message
@@ -177,11 +192,11 @@ impl Sys {
     /// To use this function, you would typically call it from the main function of your CLI tool:
     ///
     /// ```
-    ///     githubcli()
+    ///     github_cli()
     /// ```
     ///
     /// If the 'status' flag is present in the command line arguments, this will print "hey status" to the console.    ///
-    pub fn githubcli() {
+    pub fn handle_github_cli() {
         let arg = Sys::parse();
         // TODO: status command
         // TODO: push command which has git add commit and push
@@ -193,17 +208,17 @@ impl Sys {
             let _ = Execute::run("git", &["add", "."]);
             let cmt = Sys::git_commit(Some(c));
             println!("{}", cmt);
-            // let _ = Execute::run("git", &["commit", "-m", &cmt]);
-            // let r = Execute::run("git", &["push"]);
-            // if r.is_ok() {
-            //     println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
-            // } else {
-            //     println!(
-            //         "{}",
-            //         Col::print_col(&Col::Red, "Error happened during pushing")
-            //     );
-            //     std::process::exit(1)
-            // }
+            let _ = Execute::run("git", &["commit", "-m", &cmt]);
+            let r = Execute::run("git", &["push"]);
+            if r.is_ok() {
+                println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
+            } else {
+                println!(
+                    "{}",
+                    Col::print_col(&Col::Red, "Error happened during pushing")
+                );
+                std::process::exit(1)
+            }
         }
     }
 }

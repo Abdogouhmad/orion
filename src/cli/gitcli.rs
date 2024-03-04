@@ -5,21 +5,6 @@ use commandcrafter::{color::Col, execute::Execute};
 
 #[derive(Parser, Debug)]
 pub enum Commands {
-    /// git status
-    #[clap(
-        long_about = "git status is a command that shows the status of the files in the working tree"
-    )]
-    Status,
-    /// push changes you made to github
-    Push {
-        #[arg(
-            long,
-            short,
-            long_help = "capturing the commit msg through assign it as string -c=\"your msg\" "
-        )]
-        commit: Option<String>,
-    },
-
     /// clone any repo use help Clone to know more
     #[clap(long_about = "clone any repo with username + repo's name and choose Full or 1")]
     Clone {
@@ -35,39 +20,12 @@ pub enum Commands {
     },
 }
 
+/// sub command for git cli commands
 impl Commands {
-    fn git_commit(commit: Option<String>) -> String {
-        if let Some(commit_message) = commit {
-            commit_message
-        } else {
-            println!("No commit message provided");
-            std::process::exit(1);
-        }
-    }
     pub fn git_cli() {
         let args = Sys::parse();
         if let Some(command) = args.command {
             match command {
-                // get the changes you made
-                Commands::Status => {
-                    let s = Execute::run("git", &["status", "--short"]);
-                    Execute::print_into_console(s)
-                }
-                Commands::Push { commit } => {
-                    let _ = Execute::run("git", &["add", "."]);
-                    let cmt = Commands::git_commit(commit);
-                    let _ = Execute::run("git", &["commit", "-m", &cmt]);
-                    let r = Execute::run("git", &["push"]);
-                    if r.is_ok() {
-                        println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
-                    } else {
-                        println!(
-                            "{}",
-                            Col::print_col(&Col::Red, "Error happened during pushing")
-                        );
-                        std::process::exit(1)
-                    }
-                }
                 Commands::Clone {
                     username,
                     repo,
