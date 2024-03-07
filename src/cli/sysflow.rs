@@ -46,6 +46,7 @@ pub struct Sys {
         long_help = "capturing the commit msg through assign it as string -c=\"your msg\" "
     )]
     commit: Option<String>,
+
     /// sub command for git status
     #[command(subcommand)]
     pub command: Option<Commands>,
@@ -121,6 +122,9 @@ impl Sys {
                         e
                     ),
                 }
+                let _ = Execute::run("paccache", &["-ru"]);
+                let _ = Execute::run("sudo", &["pacman", "-Scc"]);
+                let _ = Execute::run("yay", &["-Scc"]);
             }
         }
 
