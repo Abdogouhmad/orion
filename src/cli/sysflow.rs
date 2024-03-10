@@ -50,6 +50,10 @@ pub struct Sys {
     /// sub command for git status
     #[command(subcommand)]
     pub command: Option<Commands>,
+
+    /// Test ping command
+    #[arg(short, long)]
+    pub ping: bool,
 }
 
 impl Sys {

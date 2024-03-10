@@ -31,26 +31,27 @@ impl Commands {
                     repo,
                     depth,
                 } => {
-                    if let (Some(u), Some(r), Some(d)) = (username, repo, depth) {
-                        if d == "full" {
-                            let color = Col::print_col(
-                                &Col::Yellow,
-                                "hey there you choose the full clone now!",
-                            );
-                            println!("{}", color);
-                            let clonefmt = format!("git@github.com:{}/{}.git", u, r);
-                            let r = Execute::run("git", &["clone", &clonefmt]);
-                            match r {
-                                Ok(_) => {
-                                    println!("{}", Col::print_col(&Col::Green, "repo is cloned"))
-                                }
-                                Err(e) => println!(
-                                    "{} {}",
-                                    Col::print_col(&Col::Red, "something happened: "),
-                                    e
-                                ),
-                            };
-                        }
+                    if let (Some(u), Some(r)) = (username, repo) {
+                        let clonefmt = format!("git@github.com:{}/{}.git", u, r);
+                        // clone based on value provided either 1 or full or none which will clone as full
+                        // TODO: make the depth to be customized based on provided number
+                        let clone_args: Vec<&str> = match depth {
+                            Some(d) if d == "full" => vec!["clone", "--depth", "full", &clonefmt],
+                            Some(d) if d == "1" => vec!["clone", "--depth", "1", &clonefmt],
+                            // TODO: parse from String to &str
+                            _ => vec!["clone", &clonefmt],
+                        };
+                        let r = Execute::run("git", &clone_args);
+                        match r {
+                            Ok(_) => {
+                                println!("{}", Col::print_col(&Col::Green, "repo is cloned"))
+                            }
+                            Err(e) => println!(
+                                "{} {}",
+                                Col::print_col(&Col::Red, "something happened: "),
+                                e
+                            ),
+                        };
                     } else {
                         println!("Username and repo must be provided for the clone command");
                     }
