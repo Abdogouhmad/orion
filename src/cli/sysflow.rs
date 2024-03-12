@@ -165,11 +165,12 @@ impl Syscmd {
                     std::process::exit(1);
                 }
             };
+            let pushing = format!("{}", &br);
             let _ = Execute::run("git", &["add", "."]);
             let cmt = Syscmd::git_commit(Some(c.clone()));
             println!("{}", cmt);
             let _ = Execute::run("git", &["commit", "-m", &cmt]);
-            let r = Execute::run("git", &["push", "--set-upstream", "origin", &br]);
+            let r = Execute::run("git", &["push", "--set-upstream", "origin", &pushing]);
             if r.is_ok() {
                 println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
             } else {
