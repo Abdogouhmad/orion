@@ -3,10 +3,11 @@ use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
 use std::{env, fs, process};
 // for subcommand that is gitcli.rs
 use crate::Commands;
-
+// for colored cli
+use super::coloredcli::get_styles as cli_style;
 /// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
 #[derive(Parser, Debug)]
-#[command(version = "1.2.0", about, long_about)]
+#[command(version = "1.2.0", about, long_about, styles=cli_style())]
 pub struct Sys {
     /// List pacman or yay packages that need to be updated
     #[arg(short, long)]
