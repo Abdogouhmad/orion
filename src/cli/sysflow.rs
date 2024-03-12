@@ -157,11 +157,19 @@ impl Syscmd {
             Execute::print_into_console(s)
         }
         if let Some(c) = &args.commit {
+            let result = Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
+            let br = match result {
+                Ok(bytes) => String::from_utf8(bytes).expect("Invalid UTF-8"),
+                Err(err) => {
+                    eprintln!("Error: {:?}", err);
+                    std::process::exit(1);
+                }
+            };
             let _ = Execute::run("git", &["add", "."]);
             let cmt = Syscmd::git_commit(Some(c.clone()));
             println!("{}", cmt);
             let _ = Execute::run("git", &["commit", "-m", &cmt]);
-            let r = Execute::run("git", &["push"]);
+            let r = Execute::run("git", &["push", "--set-upstream", "origin", &br]);
             if r.is_ok() {
                 println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
             } else {
