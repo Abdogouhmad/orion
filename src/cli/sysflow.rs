@@ -1,74 +1,18 @@
-use clap::Parser;
+use crate::Sys;
 use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
 use std::{env, fs, process};
-// for subcommand that is gitcli.rs
-use crate::Commands;
-// for colored cli
-use super::coloredcli::get_styles as cli_style;
-/// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
-#[derive(Parser, Debug)]
-#[command(version = "1.2.0", about, long_about, styles=cli_style())]
-pub struct Sys {
-    /// List pacman or yay packages that need to be updated
-    #[arg(short, long)]
-    list: Option<String>,
+pub struct Syscmd;
 
-    /// update the package either pacman, yay or both
-    #[arg(
-        short,
-        long,
-        long_help = "this command option give the ability to choose the package manager to operate either pacman, yay or both of them"
-    )]
-    update: Option<String>,
-    /// measure the weight of folders
-    #[arg(
-        short,
-        long,
-        long_help = "measure the weight of every single folder within the same directory "
-    )]
-    weight: bool,
-
-    /// delete the log
-    #[arg(
-        short,
-        long,
-        long_help = "delete the log folder that contains the update system package within /Desktop/log"
-    )]
-    delete: bool,
-
-    /// provide the files that are in change git status
-    #[arg(short, long)]
-    status: bool,
-
-    /// push changes you made to github
-    #[arg(
-        long,
-        short,
-        long_help = "capturing the commit msg through assign it as string -c=\"your msg\" "
-    )]
-    commit: Option<String>,
-
-    /// sub command for git status
-    #[command(subcommand)]
-    pub command: Option<Commands>,
-
-    /// Test ping command
-    #[arg(short, long)]
-    pub ping: bool,
-}
-
-impl Sys {
+impl Syscmd {
     /// # system_flow
     /// this method intends to operate over many operations such:
     /// * `list`: list the packages that need to be updated within pacman and yay package manager
     /// * `update`: update the packages within pacman and yay or both at once
     /// * `weight`: list the weight of each folder within the same directory
     /// * `delete`: delete the log folder which has the logs of the update operation
-    pub fn system_flow() {
-        let args = Sys::parse();
-
+    pub fn system_flow(args: &Sys) {
         // list option command
-        if let Some(list) = args.list {
+        if let Some(list) = &args.list {
             if list == "pacman" {
                 // list the packages needs to be updated for pacman
                 let p = Execute::run("pacman", &["-Qu", "--color=always"]);
@@ -87,7 +31,7 @@ impl Sys {
         }
 
         // update option command
-        if let Some(update) = args.update {
+        if let Some(update) = &args.update {
             if update == "pacman" {
                 // update pacman packages
                 let r = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
@@ -205,17 +149,16 @@ impl Sys {
     /// ```
     ///
     /// If the 'status' flag is present in the command line arguments, this will print "hey status" to the console.    ///
-    pub fn handle_github_cli() {
-        let arg = Sys::parse();
+    pub fn handle_github_cli(args: &Sys) {
         // TODO: status command
         // TODO: push command which has git add commit and push
-        if arg.status {
+        if args.status {
             let s = Execute::run("git", &["status", "--short"]);
             Execute::print_into_console(s)
         }
-        if let Some(c) = arg.commit {
+        if let Some(c) = &args.commit {
             let _ = Execute::run("git", &["add", "."]);
-            let cmt = Sys::git_commit(Some(c));
+            let cmt = Syscmd::git_commit(Some(c.clone()));
             println!("{}", cmt);
             let _ = Execute::run("git", &["commit", "-m", &cmt]);
             let r = Execute::run("git", &["push"]);

@@ -1,6 +1,5 @@
-use crate::cli;
+use crate::Sys;
 use clap::Parser;
-use cli::sysflow::Sys;
 use commandcrafter::{color::Col, execute::Execute};
 
 #[derive(Parser, Debug)]
