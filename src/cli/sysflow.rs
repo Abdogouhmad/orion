@@ -152,6 +152,7 @@ impl Syscmd {
     pub fn handle_github_cli(args: &Sys) {
         // TODO: status command
         // TODO: push command which has git add commit and push
+        // TODO: fix pushing to github
         if args.status {
             let s = Execute::run("git", &["status", "--short"]);
             Execute::print_into_console(s)

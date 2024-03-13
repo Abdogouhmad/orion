@@ -1,6 +1,6 @@
-pub struct MoreCommands;
+pub struct FileCreate;
 use crate::Sys;
-impl MoreCommands {
+impl FileCreate {
     pub fn handle_more_commands(args: &Sys) {
         // Handle the ping command
         if args.ping {

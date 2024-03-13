@@ -1,12 +1,8 @@
 mod cli;
 use clap::Parser;
-use cli::{filemanager::MoreCommands, gitcli::Commands, sysflow::Syscmd};
-
-// for subcommand that is gitcli.rs
-
-// for colored cli
-// use super::coloredcli::get_styles as cli_style;
 use cli::coloredcli::get_styles as cli_style;
+use cli::{filemanager::FileCreate, gitcli::Commands, sysflow::Syscmd};
+
 /// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
 #[derive(Parser, Debug)]
 #[command(version = "1.2.0", about, long_about, styles=cli_style())]
@@ -65,5 +61,5 @@ fn main() {
     Syscmd::system_flow(&args);
     Syscmd::handle_github_cli(&args);
     Commands::git_cli();
-    MoreCommands::handle_more_commands(&args);
+    FileCreate::handle_more_commands(&args);
 }
