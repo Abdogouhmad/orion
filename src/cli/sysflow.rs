@@ -158,7 +158,9 @@ impl Syscmd {
             Execute::print_into_console(s)
         }
         if let Some(c) = &args.commit {
+            // store the name of commit inside res var
             let result = Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
+            // convert rs of vec to string
             let br = match result {
                 Ok(bytes) => String::from_utf8(bytes).expect("Invalid UTF-8"),
                 Err(err) => {
@@ -166,12 +168,14 @@ impl Syscmd {
                     std::process::exit(1);
                 }
             };
-            let pushing = format!("{}", &br);
+            // add the changes
             let _ = Execute::run("git", &["add", "."]);
+            // get the commit name
             let cmt = Syscmd::git_commit(Some(c.clone()));
-            println!("{}", cmt);
+            // commit
             let _ = Execute::run("git", &["commit", "-m", &cmt]);
-            let r = Execute::run("git", &["push", "--set-upstream", "origin", &pushing]);
+            // the problem lies here where I can't commit due to the change of the branch
+            let r = Execute::run("git", &["push", "--set-upstream origin", &br]);
             if r.is_ok() {
                 println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
             } else {
