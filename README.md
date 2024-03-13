@@ -14,7 +14,7 @@ managing packages, measuring folder sizes, and handling Git operations.
 - Weight: Measures the size of folders. Use -w or --weight.
 - Delete: Deletes the logs folder. Use -d or --delete.
 - Status: Provides the files that are in a changed Git status. Use -s or --status.
-- Commit: Commits and pushes changes made to GitHub. Use -c or --commit followed by the commit message.
+- Commit: Commit and push the changes regardless the branch you are in with option `-c="your commit"`.
 
 ## Usage
 To use WhisperCLI, follow the general format: 
