@@ -148,43 +148,48 @@ impl Syscmd {
     ///     github_cli()
     /// ```
     ///
-    /// If the 'status' flag is present in the command line arguments, this will print "hey status" to the console.    ///
+    /// If the 'status' flag is present in the command line arguments, this will print "hey status" to the console.
     pub fn handle_github_cli(args: &Sys) {
-        // TODO: status command
-        // TODO: push command which has git add commit and push
-        // TODO: fix pushing to github
         if args.status {
             let s = Execute::run("git", &["status", "--short"]);
             Execute::print_into_console(s)
         }
-        if let Some(c) = &args.commit {
-            // store the name of commit inside res var
-            let result = Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
-            // convert rs of vec to string
-            let br = match result {
-                Ok(bytes) => String::from_utf8(bytes).expect("Invalid UTF-8"),
+
+        if let Some(commit_message) = &args.commit {
+            // Add changes
+            let add_result = Execute::run("git", &["add", "."]);
+            if let Err(err) = add_result {
+                eprintln!("Error adding changes: {:?}", err);
+                std::process::exit(1);
+            }
+
+            // Commit changes
+            let cmt = Syscmd::git_commit(Some(commit_message.clone()));
+            let commit_result = Execute::run("git", &["commit", "-m", &cmt]);
+            if let Err(err) = commit_result {
+                eprintln!("Error committing changes: {:?}", err);
+                std::process::exit(1);
+            }
+
+            // Get current branch name
+            let branch_result = Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
+            let branch_name = match branch_result {
+                Ok(bytes) => String::from_utf8_lossy(&bytes).trim().to_string(),
                 Err(err) => {
-                    eprintln!("Error: {:?}", err);
+                    eprintln!("Error getting branch name: {:?}", err);
                     std::process::exit(1);
                 }
             };
-            // add the changes
-            let _ = Execute::run("git", &["add", "."]);
-            // get the commit name
-            let cmt = Syscmd::git_commit(Some(c.clone()));
-            // commit
-            let _ = Execute::run("git", &["commit", "-m", &cmt]);
-            // the problem lies here where I can't commit due to the change of the branch
-            let r = Execute::run("git", &["push", "--set-upstream", "origin", &br]);
-            if r.is_ok() {
-                println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
-            } else {
-                println!(
-                    "{}",
-                    Col::print_col(&Col::Red, "Error happened during pushing")
-                );
-                std::process::exit(1)
+
+            // Push changes
+            let push_result =
+                Execute::run("git", &["push", "--set-upstream", "origin", &branch_name]);
+            if push_result.is_err() {
+                eprintln!("Error pushing changes");
+                std::process::exit(1);
             }
+
+            println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
         }
     }
 }
