@@ -175,7 +175,7 @@ impl Syscmd {
             // commit
             let _ = Execute::run("git", &["commit", "-m", &cmt]);
             // the problem lies here where I can't commit due to the change of the branch
-            let r = Execute::run("git", &["push", "--set-upstream origin", &br]);
+            let r = Execute::run("git", &["push", "--set-upstream", "origin", &br]);
             if r.is_ok() {
                 println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
             } else {
