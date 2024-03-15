@@ -12,6 +12,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 clap = { version = "4.5.1", features = ["derive", "cargo"] }
+inquire = "0.7.1"
 commandcrafter = "0.3.2"
 [profile.dev]
 opt-level = 1

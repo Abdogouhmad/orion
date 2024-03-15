@@ -50,9 +50,9 @@ pub struct Sys {
     #[command(subcommand)]
     pub command: Option<Commands>,
 
-    /// Test ping command
+    /// create a python file
     #[arg(short, long)]
-    pub ping: bool,
+    pub py: bool,
 }
 
 fn main() {
@@ -61,5 +61,5 @@ fn main() {
     Syscmd::system_flow(&args);
     Syscmd::handle_github_cli(&args);
     Commands::git_cli();
-    FileCreate::handle_more_commands(&args);
+    FileCreate::python(&args);
 }
