@@ -50,9 +50,9 @@ pub struct Sys {
     #[command(subcommand)]
     pub command: Option<Commands>,
 
-    /// create a python file
+    /// create a project based on language type
     #[arg(short, long)]
-    pub py: bool,
+    pub file: bool,
 }
 
 fn main() {
@@ -61,5 +61,5 @@ fn main() {
     Syscmd::system_flow(&args);
     Syscmd::handle_github_cli(&args);
     Commands::git_cli();
-    FileCreate::python(&args);
+    FileCreate::create_project(&args);
 }
