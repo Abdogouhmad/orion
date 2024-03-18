@@ -19,27 +19,9 @@ impl FileCreate {
                     // match the language
                     if lang == "RUST" {
                         // choose between lib and bin
-                        let type_prj = vec!["--lib", "--bin"];
-                        let tp = Select::new("Pick type of project", type_prj).prompt();
-                        match tp {
-                            Ok(ty_name) => {
-                                let name_of_project =
-                                    Text::new("What is the name of project?").prompt();
-                                match name_of_project {
-                                    Ok(name) => {
-                                        // let cargo_flags = ["--vcs", "none", &ty_name];
-                                        let _ = Execute::run(
-                                            "cargo",
-                                            &["new", &name, "--vcs", "none", &ty_name],
-                                        );
-                                    }
-                                    Err(_) => eprintln!("smthg went wrong"),
-                                }
-                            }
-                            Err(_) => eprintln!("smth went wrong"),
-                        }
+                        self::FileCreate::rust_project();
                     } else if lang == "PYTHON" {
-                        println!("you are in py now");
+                        self::FileCreate::python_project();
                     }
                 }
                 Err(_) => {
@@ -48,6 +30,30 @@ impl FileCreate {
                 }
             }
         }
+    }
+
+    /// create a rust project based on the user input
+    fn rust_project() {
+        let type_prj = vec!["--lib", "--bin"];
+        let tp = Select::new("Pick type of project", type_prj).prompt();
+        match tp {
+            Ok(ty_name) => {
+                let name_of_project = Text::new("What is the name of project?").prompt();
+                match name_of_project {
+                    Ok(name) => {
+                        // let cargo_flags = ["--vcs", "none", &ty_name];
+                        let _ = Execute::run("cargo", &["new", &name, "--vcs", "none", &ty_name]);
+                    }
+                    Err(_) => eprintln!("smthg went wrong"),
+                }
+            }
+            Err(_) => eprintln!("smth went wrong"),
+        }
+    }
+
+    /// create a python project based based on the user input
+    fn python_project() {
+        println!("you are in py now");
     }
 }
 
