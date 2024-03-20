@@ -7,17 +7,13 @@ use cli::{filemanager::FileCreate, gitcli::Commands, sysflow::Syscmd};
 #[derive(Parser, Debug)]
 #[command(version = "2.1.0", about, long_about, styles=cli_style())]
 pub struct Sys {
-    /// List pacman or yay packages that need to be updated
+    /// List packages that needs to be updated
     #[arg(short, long)]
-    list: Option<String>,
+    list: bool,
 
-    /// update the package either pacman, yay or both
-    #[arg(
-        short,
-        long,
-        long_help = "this command option give the ability to choose the package manager to operate either pacman, yay or both of them"
-    )]
-    update: Option<String>,
+    /// update the packages using both yay and pacman at once
+    #[arg(short, long)]
+    update: bool,
     /// measure the weight of folders
     #[arg(
         short,

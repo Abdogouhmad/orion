@@ -13,7 +13,7 @@ impl FileCreate {
         if args.file {
             // select a language
             let languages = vec!["RUST", "PYTHON"];
-            let c = Select::new("Pick a language", languages).prompt();
+            let c = Select::new("Pick a language 😄", languages).prompt();
             match c {
                 Ok(lang) => {
                     // match the language

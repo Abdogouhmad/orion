@@ -7,74 +7,41 @@ impl Syscmd {
     /// # system_flow
     /// this method intends to operate over many operations such:
     /// * `list`: list the packages that need to be updated within pacman and yay package manager
-    /// * `update`: update the packages within pacman and yay or both at once
+    /// * `update`: update the packages within pacman and yay both at once
     /// * `weight`: list the weight of each folder within the same directory
     /// * `delete`: delete the log folder which has the logs of the update operation
     pub fn system_flow(args: &Sys) {
         // list option command
-        if let Some(list) = &args.list {
-            if list == "pacman" {
-                // list the packages needs to be updated for pacman
-                let p = Execute::run("pacman", &["-Qu", "--color=always"]);
-                Execute::print_into_console(p);
-            } else if list == "yay" {
-                // list the packages needs to be updated for yay
-                let y = Execute::run("yay", &["-Qu", "--color=always"]);
-                Execute::print_into_console(y);
-            } else if list == "both" {
-                // list the packages needs to be updated for both
-                let p = Execute::run("pacman", &["-Qu", "--color=always"]);
-                let y = Execute::run("yay", &["-Qu", "--color=always"]);
-                let c = vec![p, y];
-                Execute::print_into_console_multiple(c);
-            }
+        if args.list {
+            // list the packages needs to be updated for both
+            let p = Execute::run("pacman", &["-Qu", "--color=always"]);
+            let y = Execute::run("yay", &["-Qu", "--color=always"]);
+            let c = vec![p, y];
+            Execute::print_into_console_multiple(c);
         }
 
-        // update option command
-        if let Some(update) = &args.update {
-            if update == "pacman" {
-                // update pacman packages
-                let r = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
-                match r {
-                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Pacman is updated")),
-                    Err(e) => println!(
-                        "{} {}",
-                        Col::print_col(&Col::Red, "Pacman is not updated: "),
-                        e
-                    ),
+        // update command
+        if args.update {
+            // update packages in both yay and pacman
+            let p = Execute::run("sudo", &["pacman", "-Syu", "--noconfirm"]);
+            // yay update 2nd
+            let y = Execute::run("yay", &["-Syu", "--noconfirm"]);
+            let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
+            match cmb {
+                Ok(_) => {
+                    println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
+                    let _ = Execute::run("notify-send", &["System is updated"]);
                 }
-            } else if update == "yay" {
-                // update yay packages
-                let r = Execute::run("yay", &["-Syyu", "--noconfirm"]);
-                match r {
-                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Yay is updated")),
-                    Err(e) => println!(
-                        "{} {}",
-                        Col::print_col(&Col::Red, "Yay is not updated: "),
-                        e
-                    ),
-                }
-            } else if update == "both" {
-                // update packages in both yay and pacman
-                let p = Execute::run("sudo", &["pacman", "-Syyu", "--noconfirm"]);
-                // yay update 2nd
-                let y = Execute::run("yay", &["-Syyu", "--noconfirm"]);
-                let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
-                match cmb {
-                    Ok(_) => {
-                        println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
-                        let _ = Execute::run("notify-send", &["System is updated"]);
-                    }
-                    Err(e) => println!(
-                        "{} {}",
-                        Col::print_col(&Col::Red, "Something went wrong: "),
-                        e
-                    ),
-                }
-                let _ = Execute::run("paccache", &["-ru"]);
-                let _ = Execute::run("sudo", &["pacman", "-Scc"]);
-                let _ = Execute::run("yay", &["-Scc"]);
+                Err(e) => println!(
+                    "{} {}",
+                    Col::print_col(&Col::Red, "Something went wrong: "),
+                    e
+                ),
             }
+            // clean the cache of package managers
+            let _ = Execute::run("paccache", &["-ru"]);
+            let _ = Execute::run("sudo", &["pacman", "-Sc"]);
+            let _ = Execute::run("yay", &["-Sc"]);
         }
 
         // weight option command
