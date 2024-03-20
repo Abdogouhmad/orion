@@ -7,6 +7,7 @@ use std::{
     io::{BufRead, BufReader},
     process,
 };
+
 pub struct Syscmd;
 
 impl Syscmd {
@@ -63,9 +64,9 @@ impl Syscmd {
                     for p in pckg {
                         match p {
                             // TODO: fun for updating
-                            "pacman" => println!("pacman is here"),
-                            "yay" => println!("yay is here"),
-                            "flatpack" => println!("flatpack is here"),
+                            "pacman" => self::Syscmd::update_pacman(),
+                            "yay" => self::Syscmd::update_yay(),
+                            "flatpack" => self::Syscmd::update_flatpack(),
                             _ => eprintln!("out of range"),
                         }
                     }
@@ -188,5 +189,18 @@ impl Syscmd {
 
             println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
         }
+    }
+
+    /// update_pacman
+    fn update_pacman() {
+        println!("pacman here")
+    }
+    /// update_yay
+    fn update_yay() {
+        todo!();
+    }
+    /// update_flatpack
+    fn update_flatpack() {
+        todo!();
     }
 }
