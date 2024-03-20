@@ -18,9 +18,10 @@ impl FileCreate {
                 Ok(lang) => {
                     // match the language
                     if lang == "RUST" {
-                        // choose between lib and bin
+                        // RUST
                         self::FileCreate::rust_project();
                     } else if lang == "PYTHON" {
+                        // PYTHON
                         self::FileCreate::python_project();
                     }
                 }
