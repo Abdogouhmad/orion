@@ -1,6 +1,12 @@
+#![allow(unused_imports)]
 use crate::Sys;
 use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
-use std::{env, fs, process};
+use inquire::MultiSelect;
+use std::{
+    env, fs,
+    io::{BufRead, BufReader},
+    process,
+};
 pub struct Syscmd;
 
 impl Syscmd {
@@ -23,25 +29,49 @@ impl Syscmd {
         // update command
         if args.update {
             // update packages in both yay and pacman
-            let p = Execute::run("sudo", &["pacman", "-Syu", "--noconfirm"]);
-            // yay update 2nd
-            let y = Execute::run("yay", &["-Syu", "--noconfirm"]);
-            let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
-            match cmb {
-                Ok(_) => {
-                    println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
-                    let _ = Execute::run("notify-send", &["System is updated"]);
+            // let p = Execute::run("sudo", &["pacman", "-Syu", "--noconfirm"]);
+            // // yay update 2nd
+            // let y = Execute::run("yay", &["-Syu", "--noconfirm"]);
+            // let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
+            // match cmb {
+            //     Ok(_) => {
+            //         println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
+            //         let _ = Execute::run("notify-send", &["System is updated"]);
+            //     }
+            //     Err(e) => println!(
+            //         "{} {}",
+            //         Col::print_col(&Col::Red, "Something went wrong: "),
+            //         e
+            //     ),
+            // }
+            // // clean the cache of package managers
+            // let _ = Execute::run("paccache", &["-ru"]);
+            // let _ = Execute::run("sudo", &["pacman", "-Sc"]);
+            // let _ = Execute::run("yay", &["-Sc"]);
+
+            // vector str of options
+            let packagemanger = vec!["pacman", "yay", "flatpack"];
+            // map the vec options
+            let packager = MultiSelect::new(
+                "choose the package manager you want to update 😄 🆙",
+                packagemanger,
+            )
+            .prompt();
+            // match the options
+            match packager {
+                Ok(pckg) => {
+                    for p in pckg {
+                        match p {
+                            // TODO: fun for updating
+                            "pacman" => println!("pacman is here"),
+                            "yay" => println!("yay is here"),
+                            "flatpack" => println!("flatpack is here"),
+                            _ => eprintln!("out of range"),
+                        }
+                    }
                 }
-                Err(e) => println!(
-                    "{} {}",
-                    Col::print_col(&Col::Red, "Something went wrong: "),
-                    e
-                ),
+                Err(_) => eprintln!("error"),
             }
-            // clean the cache of package managers
-            let _ = Execute::run("paccache", &["-ru"]);
-            let _ = Execute::run("sudo", &["pacman", "-Sc"]);
-            let _ = Execute::run("yay", &["-Sc"]);
         }
 
         // weight option command
