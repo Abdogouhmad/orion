@@ -1,11 +1,9 @@
-#![allow(unused_imports)]
 use crate::Sys;
 use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
 use inquire::MultiSelect;
 use std::{
     env, fs,
-    io::{BufRead, BufReader},
-    process,
+    process::{self, exit},
 };
 
 pub struct Syscmd;
@@ -64,8 +62,8 @@ impl Syscmd {
                     for p in pckg {
                         match p {
                             // TODO: fun for updating
-                            "pacman" => self::Syscmd::update_pacman(),
-                            "yay" => self::Syscmd::update_yay(),
+                            "pacman" => self::Syscmd::arch_update("pacman"),
+                            "yay" => self::Syscmd::arch_update("yay"),
                             "flatpack" => self::Syscmd::update_flatpack(),
                             _ => eprintln!("out of range"),
                         }
@@ -192,12 +190,41 @@ impl Syscmd {
     }
 
     /// update_pacman
-    fn update_pacman() {
-        println!("pacman here")
-    }
-    /// update_yay
-    fn update_yay() {
-        todo!();
+    fn arch_update(name: &str) {
+        let pac_flag = ["pacman", "-Syu", "--noconfirm"];
+        let yay_flag = ["-Syu", "--noconfirm"];
+        if name.contains("pacman") {
+            let pac = Execute::run("sudo", &pac_flag);
+            let pac_log = Filestore::write_into_desktop(&pac, "/pacman.log");
+            match pac_log {
+                Ok(_) => {
+                    let _ = Execute::run("notify-send", &["Pacman packages are updated"]);
+                }
+                Err(e) => {
+                    eprintln!("{} : {}", Col::Red.print_col("Something went wrong"), e);
+                    let _ = Execute::run("notify-send", &["Error updateding"]);
+                    exit(1);
+                }
+            }
+        } else if name.contains("yay") {
+            let yay = Execute::run("yay", &yay_flag);
+            let yay_log = Filestore::write_into_desktop(&yay, "/yay.log");
+            match yay_log {
+                Ok(_) => {
+                    let _ = Execute::run("notify-send", &["Yay packages are updated"]);
+                }
+                Err(e) => {
+                    eprintln!("{} : {}", Col::Red.print_col("Something went wrong"), e);
+                    let _ = Execute::run("notify-send", &["Error updateding"]);
+                    exit(1);
+                }
+            }
+        }
+        let _ = [
+            Execute::run("paccache", &["-ru"]),
+            Execute::run("sudo", &["pacman", "-Sc"]),
+            Execute::run("yay", &["-Sc"]),
+        ];
     }
     /// update_flatpack
     fn update_flatpack() {
