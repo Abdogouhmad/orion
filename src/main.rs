@@ -11,7 +11,7 @@ pub struct Sys {
     #[arg(short, long)]
     list: bool,
 
-    /// update the packages using both yay and pacman at once
+    /// update the packages using your fav package manager
     #[arg(short, long)]
     update: bool,
     /// measure the weight of folders

@@ -27,29 +27,8 @@ impl Syscmd {
 
         // update command
         if args.update {
-            // update packages in both yay and pacman
-            // let p = Execute::run("sudo", &["pacman", "-Syu", "--noconfirm"]);
-            // // yay update 2nd
-            // let y = Execute::run("yay", &["-Syu", "--noconfirm"]);
-            // let cmb = Filestore::write_combined_to_desktop_log(&[p, y]);
-            // match cmb {
-            //     Ok(_) => {
-            //         println!("{}", Col::print_col(&Col::Green, "SEE DESKTOP/LOG"));
-            //         let _ = Execute::run("notify-send", &["System is updated"]);
-            //     }
-            //     Err(e) => println!(
-            //         "{} {}",
-            //         Col::print_col(&Col::Red, "Something went wrong: "),
-            //         e
-            //     ),
-            // }
-            // // clean the cache of package managers
-            // let _ = Execute::run("paccache", &["-ru"]);
-            // let _ = Execute::run("sudo", &["pacman", "-Sc"]);
-            // let _ = Execute::run("yay", &["-Sc"]);
-
             // vector str of options
-            let packagemanger = vec!["pacman", "yay", "flatpack"];
+            let packagemanger = vec!["pacman", "yay"];
             // map the vec options
             let packager = MultiSelect::new(
                 "choose the package manager you want to update 😄 🆙",
@@ -64,7 +43,6 @@ impl Syscmd {
                             // TODO: fun for updating
                             "pacman" => self::Syscmd::arch_update("pacman"),
                             "yay" => self::Syscmd::arch_update("yay"),
-                            "flatpack" => self::Syscmd::update_flatpack(),
                             _ => eprintln!("out of range"),
                         }
                     }
@@ -226,8 +204,5 @@ impl Syscmd {
             Execute::run("yay", &["-Sc"]),
         ];
     }
-    /// update_flatpack
-    fn update_flatpack() {
-        todo!();
-    }
+    // TODO: Add more package managers in futures
 }
