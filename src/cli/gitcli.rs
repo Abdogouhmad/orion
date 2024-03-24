@@ -17,10 +17,41 @@ pub enum Commands {
         #[arg(long, short, default_value = "1")]
         depth: Option<String>,
     },
+    /// push the changes with commit
+    Push {
+        /// Commit message
+        #[arg(long, short)]
+        commit: Option<String>,
+    },
 }
 
 /// sub command for git cli commands
 impl Commands {
+    /// Executes a `git_commit` take the option string and return the string for commit
+    ///
+    /// # Arguments
+    ///
+    /// * `commit` - An optional string containing the commit message. If `None`, the function will print
+    /// an error message and exit with a non-zero status code.
+    ///
+    /// # Errors
+    ///
+    /// If the `git commit` command fails, the function will print an error message and exit with a non-zero
+    /// status code.
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if it fails to execute the `git commit` command.
+    fn git_commit(commit: Option<String>) -> String {
+        if let Some(commit_message) = commit {
+            commit_message
+        } else {
+            println!("No commit message provided");
+            std::process::exit(1);
+        }
+    }
+
+    /// git_cli managed the oprations
     pub fn git_cli() {
         let args = Sys::parse();
         if let Some(command) = args.command {
@@ -53,6 +84,47 @@ impl Commands {
                         };
                     } else {
                         println!("Username and repo must be provided for the clone command");
+                    }
+                }
+                // push sub command
+                Commands::Push { commit } => {
+                    if let Some(commit_message) = commit {
+                        // Add changes
+                        let add_result = Execute::run("git", &["add", "."]);
+                        if let Err(err) = add_result {
+                            eprintln!("Error adding changes: {:?}", err);
+                            std::process::exit(1);
+                        }
+
+                        // Commit changes
+                        let cmt = Commands::git_commit(Some(commit_message.clone()));
+                        let commit_result = Execute::run("git", &["commit", "-m", &cmt]);
+                        if let Err(err) = commit_result {
+                            eprintln!("Error committing changes: {:?}", err);
+                            std::process::exit(1);
+                        }
+
+                        // Get current branch name
+                        let branch_result =
+                            Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
+                        let branch_name = match branch_result {
+                            Ok(bytes) => String::from_utf8_lossy(&bytes).trim().to_string(),
+                            Err(err) => {
+                                eprintln!("Error getting branch name: {:?}", err);
+                                std::process::exit(1);
+                            }
+                        };
+
+                        // Push changes
+                        let push_result = Execute::run(
+                            "git",
+                            &["push", "--set-upstream", "origin", &branch_name],
+                        );
+                        if push_result.is_err() {
+                            eprintln!("Error pushing changes");
+                            std::process::exit(1);
+                        }
+                        println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
                     }
                 }
             }
