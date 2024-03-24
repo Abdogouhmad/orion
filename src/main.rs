@@ -5,7 +5,7 @@ use cli::{filemanager::FileCreate, gitcli::Commands, sysflow::Syscmd};
 
 /// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
 #[derive(Parser, Debug)]
-#[command(version = "2.2.0", about, long_about, styles=cli_style())]
+#[command(version = "2.2.1", about, long_about, styles=cli_style())]
 pub struct Sys {
     /// List packages that needs to be updated
     #[arg(short, long)]
@@ -34,14 +34,6 @@ pub struct Sys {
     #[arg(short, long)]
     status: bool,
 
-    /// push changes you made to github
-    #[arg(
-        long,
-        short,
-        long_help = "capturing the commit msg through assign it as string -c=\"your msg\" "
-    )]
-    commit: Option<String>,
-
     /// sub command for git status
     #[command(subcommand)]
     pub command: Option<Commands>,
@@ -55,7 +47,6 @@ fn main() {
     let args = Sys::parse();
 
     Syscmd::system_flow(&args);
-    Syscmd::handle_github_cli(&args);
     Commands::git_cli();
     FileCreate::create_project(&args);
 }
