@@ -27,7 +27,7 @@ pub enum Commands {
 
 /// sub command for git cli commands
 impl Commands {
-    /// Executes a `git_commit` take the option string and return the string for commit
+    /// `git_commit` take the option string and return the string for commit
     ///
     /// # Arguments
     ///
@@ -51,7 +51,20 @@ impl Commands {
         }
     }
 
-    /// git_cli managed the oprations
+    /// `git_cli` Execute series of commands
+    /// # SubCommands
+    /// **clone:** Clone the repo with argument options
+    /// - u : username
+    /// - r : repo name
+    /// - d : depth of the clone it is optional
+    /// **push:** Push the changes to github
+    /// - c : commit message
+    /// # Examples
+    /// ```
+    /// whispercli clone -u=username -r=reponame
+    /// whispercli push -c="commit name"
+    /// ```
+
     pub fn git_cli() {
         let args = Sys::parse();
         if let Some(command) = args.command {
@@ -68,7 +81,6 @@ impl Commands {
                         let clone_args: Vec<&str> = match depth {
                             Some(d) if d == "full" => vec!["clone", "--depth", "full", &clonefmt],
                             Some(d) if d == "1" => vec!["clone", "--depth", "1", &clonefmt],
-                            // TODO: parse from String to &str
                             _ => vec!["clone", &clonefmt],
                         };
                         let r = Execute::run("git", &clone_args);
@@ -86,6 +98,7 @@ impl Commands {
                         println!("Username and repo must be provided for the clone command");
                     }
                 }
+
                 // push sub command
                 Commands::Push { commit } => {
                     if let Some(commit_message) = commit {
