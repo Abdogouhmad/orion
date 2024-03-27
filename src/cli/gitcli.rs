@@ -50,8 +50,6 @@ impl Commands {
                 } => {
                     if let (Some(u), Some(r)) = (username, repo) {
                         let clonefmt = format!("git@github.com:{}/{}.git", u, r);
-                        // clone based on value provided either 1 or full or none which will clone as full
-                        // TODO: make the depth to be customized based on provided number
                         let clone_args: Vec<&str> = match depth {
                             Some(d) if d == "full" => vec!["clone", "--depth", "full", &clonefmt],
                             Some(d) if d == "1" => vec!["clone", "--depth", "1", &clonefmt],
