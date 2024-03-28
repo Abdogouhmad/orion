@@ -5,7 +5,7 @@ use inquire::{InquireError, Select, Text};
 
 #[derive(Parser, Debug)]
 pub enum Commands {
-    /// clone any repo use help Clone to know more
+    /// clone any repo use help Clone to know more 🫠
     #[clap(long_about = "clone any repo with username + repo's name and choose Full or 1")]
     Clone {
         /// the owner of repo you want to clone
