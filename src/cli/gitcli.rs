@@ -7,18 +7,7 @@ use inquire::{InquireError, Select, Text};
 pub enum Commands {
     /// clone any repo use help Clone to know more 🫠
     #[clap(long_about = "clone any repo with username + repo's name and choose Full or 1")]
-    Clone {
-        /// the owner of repo you want to clone
-        #[arg(long, short)]
-        username: Option<String>,
-        /// the name of repo to be cloned
-        #[arg(long, short)]
-        repo: Option<String>,
-        /// depth of the cloning
-        #[arg(long, short, default_value = "1")]
-        depth: Option<String>,
-    },
-
+    Clone,
     /// push the changes to the github 😃
     Push,
 }
@@ -42,34 +31,39 @@ impl Commands {
         let args = Sys::parse();
         if let Some(command) = args.command {
             match command {
-                Commands::Clone {
-                    username,
-                    repo,
-                    depth,
-                } => {
-                    if let (Some(u), Some(r)) = (username, repo) {
-                        let clonefmt = format!("git@github.com:{}/{}.git", u, r);
-                        let clone_args: Vec<&str> = match depth {
-                            Some(d) if d == "full" => vec!["clone", "--depth", "full", &clonefmt],
-                            Some(d) if d == "1" => vec!["clone", "--depth", "1", &clonefmt],
-                            _ => vec!["clone", &clonefmt],
-                        };
-                        let r = Execute::run("git", &clone_args);
-                        match r {
-                            Ok(_) => {
-                                println!("{}", Col::print_col(&Col::Green, "repo is cloned"))
+                Commands::Clone => {
+                    let username = Text::new("Enter the owner of repo: ").prompt();
+                    let repo = Text::new("Enter the name of the repo: ").prompt();
+                    let depth = Text::new("Enter the depth of cloning: ")
+                        .with_default("0")
+                        .prompt_skippable();
+
+                    match (username, repo, depth) {
+                        (Ok(username), Ok(repo), Ok(depth)) => {
+                            let clonefmt = format!("git@github.com:{}/{}.git", username, repo);
+                            let mut clone_pattern = vec!["clone"];
+
+                            // Only add depth option if depth is provided and greater than 0
+                            if let Some(depth) = depth.as_deref() {
+                                let depth_int: usize = depth.parse().unwrap_or(0);
+                                if depth_int > 0 {
+                                    clone_pattern.push("--depth");
+                                    clone_pattern.push(depth);
+                                }
                             }
-                            Err(e) => println!(
-                                "{} {}",
-                                Col::print_col(&Col::Red, "something happened: "),
-                                e
-                            ),
-                        };
-                    } else {
-                        println!("Username and repo must be provided for the clone command");
+
+                            clone_pattern.push(&clonefmt);
+
+                            let res = Execute::run("git", &clone_pattern);
+                            if res.is_ok() {
+                                println!("{}", Col::Green.print_col("Clone the repo well"))
+                            } else if res.is_err() {
+                                println!("{}", Col::Red.print_col("Clone the repo didn't go well"))
+                            }
+                        }
+                        _ => (),
                     }
                 }
-
                 Commands::Push => {
                     let variety_commits = vec![
                         "New Improvement to the code base 🚀",
