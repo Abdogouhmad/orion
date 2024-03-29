@@ -11,4 +11,4 @@ printcl() {
 
 printcl "${YELLOW}" "Installing The CLI into your /usr/bin..."
 sudo curl -L https://github.com/div-styl/orion/releases/download/2.2.1/orion -o /usr/bin/orion
-printcl "${GREEN}" "Installed Successfully!"
+printcl "${GREEN}" "Installed Successfully! run the CLI as command orion -h"
