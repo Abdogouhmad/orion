@@ -20,7 +20,7 @@ managing packages, measuring folder sizes, and handling Git operations.
 ## installation
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/div-styl/whispercli/main/install.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/div-styl/orion/main/install.sh)
 ```
 
 ## Usage
