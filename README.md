@@ -17,6 +17,12 @@ managing packages, measuring folder sizes, and handling Git operations.
 - Delete: Deletes the logs folder. Use -d or --delete.
 - Status: Provides the files that are in a changed Git status. Use -s or --status.
 
+## installation
+
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/div-styl/whispercli/main/install.sh)
+```
+
 ## Usage
 
 To use WhisperCLI, follow the general format:
