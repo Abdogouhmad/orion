@@ -10,6 +10,8 @@ pub enum Commands {
     Clone,
     /// push the changes to the github 😃
     Push,
+    /// create release tag through the shell command
+    Release,
 }
 
 /// sub command for git cli commands
@@ -38,30 +40,27 @@ impl Commands {
                         .with_default("0")
                         .prompt_skippable();
 
-                    match (username, repo, depth) {
-                        (Ok(username), Ok(repo), Ok(depth)) => {
-                            let clonefmt = format!("git@github.com:{}/{}.git", username, repo);
-                            let mut clone_pattern = vec!["clone"];
+                    if let (Ok(username), Ok(repo), Ok(depth)) = (username, repo, depth) {
+                        let clonefmt = format!("git@github.com:{}/{}.git", username, repo);
+                        let mut clone_pattern = vec!["clone"];
 
-                            // Only add depth option if depth is provided and greater than 0
-                            if let Some(depth) = depth.as_deref() {
-                                let depth_int: usize = depth.parse().unwrap_or(0);
-                                if depth_int > 0 {
-                                    clone_pattern.push("--depth");
-                                    clone_pattern.push(depth);
-                                }
-                            }
-
-                            clone_pattern.push(&clonefmt);
-
-                            let res = Execute::run("git", &clone_pattern);
-                            if res.is_ok() {
-                                println!("{}", Col::Green.print_col("Clone the repo well"))
-                            } else if res.is_err() {
-                                println!("{}", Col::Red.print_col("Clone the repo didn't go well"))
+                        // Only add depth option if depth is provided and greater than 0
+                        if let Some(depth) = depth.as_deref() {
+                            let depth_int: usize = depth.parse().unwrap_or(0);
+                            if depth_int > 0 {
+                                clone_pattern.push("--depth");
+                                clone_pattern.push(depth);
                             }
                         }
-                        _ => (),
+
+                        clone_pattern.push(&clonefmt);
+
+                        let res = Execute::run("git", &clone_pattern);
+                        if res.is_ok() {
+                            println!("{}", Col::Green.print_col("Clone the repo well"))
+                        } else if res.is_err() {
+                            println!("{}", Col::Red.print_col("Clone the repo didn't go well"))
+                        }
                     }
                 }
                 Commands::Push => {
@@ -91,6 +90,8 @@ impl Commands {
                         Err(e) => eprintln!("Error: {}", e),
                     }
                 }
+                // create release tag
+                Commands::Release => println!("hello"),
             }
         }
     }
