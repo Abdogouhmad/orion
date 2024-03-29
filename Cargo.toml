@@ -1,6 +1,6 @@
 [package]
-name = "whispercli"
-description = "Whispercli is a CLI tool that intends to minimize the amount of written command line within the console"
+name = "orion"
+description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
 version = "2.2.2"
 edition = "2021"
 authors = ["div-styl"]

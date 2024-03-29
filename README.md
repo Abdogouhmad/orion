@@ -1,8 +1,8 @@
-# WhisperCLI
+# Orion
 
 ## Overview
 
-WhisperCLI is a command-line interface tool built with Rust,
+Orion is a command-line interface tool built with Rust,
 aimed at minimizing the amount of written command line in the terminal.
 It simplifies various tasks such as cloning repositories,
 managing packages, measuring folder sizes, and handling Git operations.
@@ -25,10 +25,10 @@ bash <(curl -sSL https://raw.githubusercontent.com/div-styl/whispercli/main/inst
 
 ## Usage
 
-To use WhisperCLI, follow the general format:
+To use Orion, follow the general format:
 
 ```bash
-whispercli [OPTIONS] [COMMAND].
+orion [OPTIONS] [COMMAND].
 ```
 
 For detailed usage instructions, refer to the help command: whispercli --help.
