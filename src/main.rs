@@ -30,10 +30,6 @@ pub struct Sys {
     )]
     delete: bool,
 
-    /// provide the files that are in change git status
-    #[arg(short, long)]
-    status: bool,
-
     /// sub command for git status
     #[command(subcommand)]
     pub command: Option<Commands>,
