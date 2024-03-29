@@ -10,5 +10,5 @@ printcl() {
 }
 
 printcl "${YELLOW}" "Installing The CLI into your /usr/bin..."
-sudo curl -L https://github.com/div-styl/whispercli/releases/download/2.2.1/whispercli -o /usr/bin/whispercli
+sudo curl -L https://github.com/div-styl/whispercli/releases/download/2.2.1/orion -o /usr/bin/orion
 printcl "${GREEN}" "Installed Successfully!"
