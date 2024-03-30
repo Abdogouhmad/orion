@@ -17,6 +17,7 @@ impl Syscmd {
     /// * `delete`: delete the log folder which has the logs of the update operation
     pub fn system_flow(args: &Sys) {
         // list option command
+
         if args.list {
             // list the packages needs to be updated for both
             let p = Execute::run("pacman", &["-Qu", "--color=always"]);
