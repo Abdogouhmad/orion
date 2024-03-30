@@ -1,7 +1,7 @@
 use crate::Sys;
 use clap::Parser;
 use commandcrafter::{color::Col, execute::Execute};
-use inquire::{InquireError, Select, Text};
+use inquire::{Confirm, InquireError, Select, Text};
 
 #[derive(Parser, Debug)]
 pub enum Commands {
@@ -66,6 +66,7 @@ impl Commands {
                 Commands::Push => {
                     let variety_commits = vec![
                         "New Improvement to the code base 🚀",
+                        "Working on new feature 👷‍♂️",
                         "Bug is Fix 🐛",
                         "Docs are updated 📚",
                         "Code is styled 🫠",
@@ -91,7 +92,28 @@ impl Commands {
                     }
                 }
                 // create release tag
-                Commands::Release => println!("hello"),
+                Commands::Release => {
+                    let tag = Text::new("Enter the version of your app 🚀: ").prompt();
+                    let msg = Text::new("Message for the tag 😉: ").prompt();
+                    let confirm_push = Confirm::new("Do you want to push the tag ❓🤔: ")
+                        .with_default(false)
+                        .prompt();
+                    if let (Ok(t), Ok(m), Ok(pt)) = (tag, msg, confirm_push) {
+                        println!("{}; {}", t, m);
+                        if pt == true {
+                            println!("ok")
+                        } else if pt == false {
+                            println!("no bye")
+                        }
+                        // let msg_fmt = format!("\"{}\"", m);
+                        // let res = Execute::run("git", &["tag", "-a", &t, "-m", &msg_fmt]);
+                        // if res.is_ok() {
+                        //     println!("{}", Col::Green.print_col("Tag created successfully"))
+                        // } else if res.is_err() {
+                        //     println!("{}", Col::Red.print_col("Tag creation failed"))
+                        // }
+                    }
+                }
             }
         }
     }
