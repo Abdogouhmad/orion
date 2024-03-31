@@ -1,20 +1,7 @@
-workspace = { members = ["orion_lib"] }
-[package]
-name = "orion"
-description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
-version = "2.2.2"
-edition = "2021"
-authors = ["div-styl"]
-readme = "README.md"
-repository = "https://github.com/div-styl/whispercli/"
-[badges]
-maintenance = { status = "actively-developed" }
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
 
-[dependencies]
-clap = { version = "4.5.1", features = ["derive", "cargo"] }
-inquire = "0.7.1"
-commandcrafter = "0.3.2"
+members = ["orion_cli", "orion_lib"]
+
 [profile.dev]
 opt-level = 1
 [profile.release]
