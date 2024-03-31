@@ -18,54 +18,22 @@ pub enum Commands {
 impl Commands {
     /// `git_cli` Execute series of commands
     /// # SubCommands
-    /// **clone:** Clone the repo with argument options
-    /// - u : username
-    /// - r : repo name
-    /// - d : depth of the clone it is optional
-    /// **push:** Push the changes to github
-    /// - c : commit message
+    /// **clone:** Clone the repo interactivily
+    /// **push:** Push the changes to github interactivily
     /// # Examples
     /// ```
-    /// whispercli clone -u=username -r=reponame
+    /// whispercli clone
     /// whispercli push
     /// ```
     pub fn git_cli() {
         let args = Sys::parse();
         match args.command {
             Some(command) => Commands::apply_command(&command),
-            None          =>  todo!(),
+            None => todo!(),
         }
     }
 
-    /// Pushes the changes represented by the given commit to the remote repository.
-    ///
-    /// # Arguments
-    ///
-    /// * `commit` - A reference to a `Result` containing a `String` representing the commit message or an error.
-    ///
-    /// # Errors
-    ///
-    /// This function will panic and exit the process with a status code of `1` if any of the following errors occur:
-    ///
-    /// * Failed to add changes using `git add .`.
-    /// * Failed to commit changes using `git commit -m <commit_message>`.
-    /// * Failed to determine the current branch name using `git rev-parse --abbrev-ref HEAD`.
-    /// * Failed to push changes to the remote repository using `git push --set-upstream origin <branch_name>`.
-    ///
-    /// # Panics
-    ///
-    /// This function will panic if any of the above errors occur.
-    ///
-    /// # Remarks
-    ///
-    /// This function assumes that `git` is installed and accessible in the system's PATH.
-    ///
-    /// # Safety
-    ///
-    /// This function does not pose any safety concerns.
-    ///
     fn apply_clone() {
-
         let username = Text::new("Enter the owner of repo: ").prompt();
         let repo = Text::new("Enter the name of the repo: ").prompt();
         let depth = Text::new("Enter the depth of cloning: ")
@@ -95,9 +63,8 @@ impl Commands {
             }
         }
     }
-    
-    fn apply_push() {
 
+    fn apply_push() {
         let variety_commits = vec![
             "New Improvement to the code base 🚀",
             "Working on new feature 👷‍♂️",
@@ -110,14 +77,12 @@ impl Commands {
             "Customized Commit 😎",
         ];
         // select option
-        let selected_commit =
-            Select::new("Select a commit type", variety_commits).prompt();
+        let selected_commit = Select::new("Select a commit type", variety_commits).prompt();
 
         match selected_commit {
             Ok(commit_type) => match commit_type {
                 "Customized Commit 😎" => {
-                    let customize_commit =
-                        Text::new("Please Enter Commit Messege 😎:").prompt();
+                    let customize_commit = Text::new("Please Enter Commit Messege 😎:").prompt();
                     Commands::push_changes(&customize_commit)
                 }
                 _ => Commands::push_changes(&Ok(commit_type.to_string())),
@@ -125,7 +90,7 @@ impl Commands {
             Err(e) => eprintln!("Error: {}", e),
         }
     }
-    
+
     fn apply_release() {
         let tag = Text::new("Enter the version of your app 🚀: ").prompt();
         let msg = Text::new("Message for the tag 😉: ").prompt();
@@ -134,10 +99,10 @@ impl Commands {
             .prompt();
         if let (Ok(t), Ok(m), Ok(pt)) = (tag, msg, confirm_push) {
             println!("{}; {}", t, m);
-            if pt == true {
+            if pt {
                 println!("ok")
-            } else if pt == false {
-                println!("no bye")
+            } else if !pt {
+                println!("ok bye")
             }
             // let msg_fmt = format!("\"{}\"", m);
             // let res = Execute::run("git", &["tag", "-a", &t, "-m", &msg_fmt]);
@@ -151,12 +116,12 @@ impl Commands {
 
     fn apply_command(command: &Commands) {
         match *command {
-            Commands::Clone   => Commands::apply_clone(),
-            Commands::Push    => Commands::apply_push(),
+            Commands::Clone => Commands::apply_clone(),
+            Commands::Push => Commands::apply_push(),
             Commands::Release => Commands::apply_release(),
         }
     }
-    
+
     fn push_changes(commit: &Result<String, InquireError>) {
         match commit {
             Ok(commit) => {
