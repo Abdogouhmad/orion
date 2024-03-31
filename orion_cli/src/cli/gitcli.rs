@@ -17,10 +17,13 @@ pub enum Commands {
 impl Commands {
     pub fn git_cli() {
         let args = Sys::parse();
-        match args.command {
-            Some(command) => Commands::apply_command(&command),
-            None => todo!(),
+        if let Some(command) = args.command {
+            Commands::apply_command(&command);
         }
+        // match args.command {
+        //     Some(command) => Commands::apply_command(&command),
+        //     None => eprintln!("Out of range"),
+        // }
     }
 
     fn apply_command(command: &Commands) {
