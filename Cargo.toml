@@ -1,3 +1,4 @@
+workspace = { members = ["orion_lib"] }
 [package]
 name = "orion"
 description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
