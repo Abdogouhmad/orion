@@ -1,12 +1,12 @@
 
 [package]
-name = "orion"
-description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
-version = "2.2.2"
-edition = "2021"
-authors = ["div-styl"]
-readme = "README.md"
-repository = "https://github.com/div-styl/whispercli/"
+name = "orion_cli"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+readme.workspace = true
+repository.workspace = true
 [badges]
 maintenance = { status = "actively-developed" }
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
