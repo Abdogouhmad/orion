@@ -1,9 +1,9 @@
 [workspace]
 
 members = ["orion_cli", "orion_lib"]
+resolver = "2"
 
 [workspace.package]
-name = "orion"
 description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
 version = "2.2.4"
 edition = "2021"

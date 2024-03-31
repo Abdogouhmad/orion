@@ -1,9 +1,10 @@
 use crate::Sys;
-use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
+use commandcrafter::{color::Col, execute::Execute};
 use inquire::MultiSelect;
+use orion_lib::arch::update;
 use std::{
     env, fs,
-    process::{self, exit},
+    process::{self},
 };
 
 pub struct Syscmd;
@@ -42,8 +43,8 @@ impl Syscmd {
                     for p in pckg {
                         match p {
                             // TODO: fun for updating
-                            "pacman" => self::Syscmd::arch_update("pacman"),
-                            "yay" => self::Syscmd::arch_update("yay"),
+                            "pacman" => update::arch_update("pacman"),
+                            "yay" => update::arch_update("yay"),
                             _ => eprintln!("out of range"),
                         }
                     }
@@ -86,43 +87,4 @@ impl Syscmd {
             }
         }
     }
-
-    /// update_pacman
-    fn arch_update(name: &str) {
-        let pac_flag = ["pacman", "-Syu", "--noconfirm"];
-        let yay_flag = ["-Syu", "--noconfirm"];
-        if name.contains("pacman") {
-            let pac = Execute::run("sudo", &pac_flag);
-            let pac_log = Filestore::write_into_desktop(&pac, "/pacman.log");
-            match pac_log {
-                Ok(_) => {
-                    let _ = Execute::run("notify-send", &["Pacman packages are updated"]);
-                }
-                Err(e) => {
-                    eprintln!("{} : {}", Col::Red.print_col("Something went wrong"), e);
-                    let _ = Execute::run("notify-send", &["Error updateding"]);
-                    exit(1);
-                }
-            }
-        } else if name.contains("yay") {
-            let yay = Execute::run("yay", &yay_flag);
-            let yay_log = Filestore::write_into_desktop(&yay, "/yay.log");
-            match yay_log {
-                Ok(_) => {
-                    let _ = Execute::run("notify-send", &["Yay packages are updated"]);
-                }
-                Err(e) => {
-                    eprintln!("{} : {}", Col::Red.print_col("Something went wrong"), e);
-                    let _ = Execute::run("notify-send", &["Error updateding"]);
-                    exit(1);
-                }
-            }
-        }
-        let _ = [
-            Execute::run("paccache", &["-ru"]),
-            Execute::run("sudo", &["pacman", "-Sc"]),
-            Execute::run("yay", &["-Sc"]),
-        ];
-    }
-    // TODO: Add more package managers in futures
 }

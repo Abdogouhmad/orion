@@ -1,6 +1,5 @@
-
 [package]
-name = "orion_cli"
+name = "orion"
 description.workspace = true
 version.workspace = true
 edition.workspace = true
