@@ -37,6 +37,10 @@ pub struct Sys {
     /// create a project based on language type
     #[arg(short, long)]
     pub file: bool,
+
+    /// observer the disk usage of your PC/Laptop
+    #[arg(long)]
+    pub disk: bool,
 }
 
 fn main() {

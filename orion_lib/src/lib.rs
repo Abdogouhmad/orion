@@ -7,5 +7,6 @@ pub mod github {
 
 /// methods for linux commands
 pub mod arch {
+    pub mod simplecmd;
     pub mod update;
 }

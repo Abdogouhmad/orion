@@ -1,7 +1,7 @@
 use crate::Sys;
 use commandcrafter::{color::Col, execute::Execute};
 use inquire::MultiSelect;
-use orion_lib::arch::update;
+use orion_lib::arch::{simplecmd, update};
 use std::{
     env, fs,
     process::{self},
@@ -17,6 +17,9 @@ impl Syscmd {
     /// * `weight`: list the weight of each folder within the same directory
     /// * `delete`: delete the log folder which has the logs of the update operation
     pub fn system_flow(args: &Sys) {
+        if args.disk {
+            simplecmd::LinuxCmd::the_duf();
+        }
         // list option command
 
         if args.list {

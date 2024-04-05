@@ -1,3 +1,4 @@
+use commandcrafter::{color::Col, execute::Execute};
 use inquire::{Confirm, Text};
 
 pub fn apply_release() {
@@ -7,18 +8,17 @@ pub fn apply_release() {
         .with_default(false)
         .prompt();
     if let (Ok(t), Ok(m), Ok(pt)) = (tag, msg, confirm_push) {
-        println!("{}; {}", t, m);
-        if pt {
-            println!("from lib ok")
-        } else if !pt {
-            println!("ok bye")
+        let msg_fmt = format!("\"{}\"", m);
+        let res = Execute::run("git", &["tag", "-a", &t, "-m", &msg_fmt]);
+        if res.is_ok() {
+            println!("{}", Col::Green.print_col("Tag created successfully"));
+            if pt {
+                println!("from lib ok")
+            } else if !pt {
+                println!("ok bye")
+            }
+        } else if res.is_err() {
+            println!("{}", Col::Red.print_col("Tag creation failed"))
         }
-        // let msg_fmt = format!("\"{}\"", m);
-        // let res = Execute::run("git", &["tag", "-a", &t, "-m", &msg_fmt]);
-        // if res.is_ok() {
-        //     println!("{}", Col::Green.print_col("Tag created successfully"))
-        // } else if res.is_err() {
-        //     println!("{}", Col::Red.print_col("Tag creation failed"))
-        // }
     }
 }
