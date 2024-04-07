@@ -1,6 +1,6 @@
 use crate::Sys;
 use clap::Parser;
-use orion_lib::github::{clone, push, release};
+use orion_lib::github::gittool::GitTool;
 
 #[derive(Parser, Debug)]
 pub enum Commands {
@@ -28,9 +28,9 @@ impl Commands {
 
     fn apply_command(command: &Commands) {
         match *command {
-            Commands::Clone => clone::apply_clone(),
-            Commands::Push => push::apply_push(),
-            Commands::Release => release::apply_release(),
+            Commands::Clone => GitTool::apply_clone(),
+            Commands::Push => GitTool::apply_push(),
+            Commands::Release => GitTool::apply_release(),
         }
     }
 }

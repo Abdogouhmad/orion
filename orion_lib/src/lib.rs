@@ -1,8 +1,6 @@
 /// methods for the github commands
 pub mod github {
-    pub mod clone;
-    pub mod push;
-    pub mod release;
+    pub mod gittool;
 }
 
 /// methods for linux commands
