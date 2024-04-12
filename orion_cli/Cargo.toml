@@ -12,6 +12,6 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 clap = { version = "4.5.1", features = ["derive", "cargo"] }
+commandcrafter = "0.4.1"
 inquire = "0.7.1"
-commandcrafter = "0.3.2"
 orion_lib = { path = "../orion_lib" }
