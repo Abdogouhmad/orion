@@ -51,8 +51,7 @@ impl Syscmd {
 
         // weight option command
         if args.weight {
-            let w = Execute::run("du", &["-h", "--max-depth=1", ".", "--time"]);
-            Execute::print_into_console(w);
+            let _ = Execute::exe("du", &["-h", "--max-depth=1", ".", "--time"]);
         }
 
         // delete option command
