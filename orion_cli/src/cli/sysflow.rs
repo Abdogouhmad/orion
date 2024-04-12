@@ -1,12 +1,7 @@
 use crate::Sys;
-use commandcrafter::{color::Col, execute::Execute};
+use commandcrafter::execute::Execute;
 use inquire::MultiSelect;
-use orion_lib::arch::{simplecmd, update};
-use std::{
-    env, fs,
-    process::{self},
-};
-
+use orion_lib::arch::{simplecmd::LinuxCmd, update};
 pub struct Syscmd;
 
 impl Syscmd {
@@ -18,16 +13,14 @@ impl Syscmd {
     /// * `delete`: delete the log folder which has the logs of the update operation
     pub fn system_flow(args: &Sys) {
         if args.disk {
-            simplecmd::LinuxCmd::the_duf();
+            LinuxCmd::the_duf();
         }
         // list option command
 
         if args.list {
             // list the packages needs to be updated for both
-            let p = Execute::run("pacman", &["-Qu", "--color=always"]);
-            let y = Execute::run("yay", &["-Qu", "--color=always"]);
-            let c = vec![p, y];
-            Execute::print_into_console_multiple(c);
+            let _ = Execute::exe("pacman", &["-Qu", "--color=always"]);
+            let _ = Execute::exe("yay", &["-Qu", "--color=always"]);
         }
 
         // update command
@@ -64,30 +57,7 @@ impl Syscmd {
 
         // delete option command
         if args.delete {
-            println!(
-                "{}",
-                Col::print_col(&Col::Yellow, "deleting log folder in process....")
-            );
-            // create a patten that match with location of the folder
-            let d = env::var("HOME").unwrap() + "/Desktop/logs";
-            // remove the folder
-            let r = fs::remove_dir_all(d);
-            // checking if the folder is deleted if not print an error
-            if r.is_ok() {
-                println!(
-                    "{}",
-                    Col::print_col(&Col::Green, "log folder deleted successfully")
-                );
-            } else {
-                println!(
-                    "{}",
-                    Col::print_col(
-                        &Col::Red,
-                        "log folder deletion failed check if the folder exists"
-                    )
-                );
-                process::exit(1);
-            }
+            LinuxCmd::deleting()
         }
     }
 }
