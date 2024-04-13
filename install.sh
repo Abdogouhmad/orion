@@ -12,7 +12,7 @@ printcl() {
 
 install_orion() {
     printcl "${YELLOW}" "Installing The CLI into /usr/bin..."
-    sudo curl -L https://github.com/div-styl/orion/releases/download/2.2.4/orion -o /usr/bin/orion
+    sudo curl -L https://github.com/div-styl/orion/releases/download/2.3.0/orion -o /usr/bin/orion
     sudo chmod +x /usr/bin/orion
     printcl "${GREEN}" "Installed Successfully! Run the CLI with the command: orion -h"
 }

@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 commandcrafter = "0.4.1"
 inquire = "0.7.1"
+walkdir = "2.5.0"
+zip = "0.6.6"

@@ -8,3 +8,7 @@ pub mod arch {
     pub mod simplecmd;
     pub mod update;
 }
+// ziper
+pub mod zipper {
+    pub mod zip;
+}

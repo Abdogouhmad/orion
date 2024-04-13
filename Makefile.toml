@@ -1,9 +1,0 @@
-
-[tasks.c]
-command = "cargo"
-args = ["clean"]
-
-[tasks.b]
-command = "cargo"
-args = ["build"]
-dependencies = ["clean"]

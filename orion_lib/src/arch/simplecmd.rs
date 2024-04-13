@@ -12,6 +12,9 @@ pub enum LinuxCmd {
 }
 
 impl LinuxCmd {
+    // # deleting()
+    // deleting is function that deletes logs folder within the desktop folder
+    // logs contains many op such yay and pacman logs.
     pub fn deleting() {
         println!(
             "{}",
@@ -38,24 +41,16 @@ impl LinuxCmd {
             process::exit(1);
         }
     }
+
+    /// # the_duf()
+    /// is a command that shows the disk usage of your hard drive
+    /// with argument of all which will list all the partions have been used in your hard disk
     pub fn the_duf() {
         let duf = Path::new("/usr/bin/duf");
         if !Path::exists(duf) {
             eprintln!("go download duf: https://github.com/muesli/duf");
         } else {
-            let rs = Execute::exe("duf", &["--all"]);
-            // let rs = Command::new("duf")
-            //     .arg("--all")
-            //     .stdout(Stdio::inherit())
-            //     .spawn();
-            match rs {
-                Ok(_) => {}
-                Err(e) => {
-                    eprintln!("Command can't be executed {}", e);
-                    std::process::exit(1)
-                }
-            }
+            let _ = Execute::exe("duf", &["--all"]);
         }
-        // todo!()
     }
 }
