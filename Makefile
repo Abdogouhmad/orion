@@ -36,5 +36,5 @@ create:
 
 del:
 	@printf "${MAGENTA} Delete the necessary files...${NC}\n"
-	@rm -rf test testziped
+	@rm -rf test testziped.zip
 
