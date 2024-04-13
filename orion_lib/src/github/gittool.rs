@@ -50,12 +50,12 @@ impl GitTool {
             .prompt();
         if let (Ok(t), Ok(m), Ok(pt)) = (tag, msg, confirm_push) {
             let msg_fmt = format!("\"{}\"", m);
-            let res = Execute::run("git", &["tag", "-a", &t, "-m", &msg_fmt]);
+            let res = Execute::exe("git", &["tag", "-a", &t, "-m", &msg_fmt]);
             if res.is_ok() {
                 println!("{}", Col::Green.print_col("Tag created successfully"));
                 if pt {
                     let tag_push = ["push", "origin", &t];
-                    let _ = Execute::run("git", &tag_push);
+                    let _ = Execute::exe("git", &tag_push);
                 } else if !pt {
                     println!("ok bye")
                 }
@@ -93,7 +93,7 @@ impl GitTool {
 
             clone_pattern.push(&clonefmt);
 
-            let res = Execute::run("git", &clone_pattern);
+            let res = Execute::exe("git", &clone_pattern);
             if res.is_ok() {
                 println!("{}", Col::Green.print_col("Clone the repo well"))
             } else if res.is_err() {
@@ -121,14 +121,14 @@ impl GitTool {
         match commit {
             Ok(commit) => {
                 // track the changes :)
-                let add_result = Execute::run("git", &["add", "."]);
+                let add_result = Execute::exe("git", &["add", "."]);
                 if let Err(err) = add_result {
                     eprintln!("Error adding changes: {:?}", err);
                     std::process::exit(1);
                 }
 
                 // commit the changes
-                let commit_result = Execute::run("git", &["commit", "-m", &commit]);
+                let commit_result = Execute::exe("git", &["commit", "-m", &commit]);
                 if let Err(err) = commit_result {
                     eprintln!("Error committing changes: {:?}", err);
                     std::process::exit(1);
@@ -146,7 +146,7 @@ impl GitTool {
 
                 // push the branch head name :')
                 let push_result =
-                    Execute::run("git", &["push", "--set-upstream", "origin", &branch_name]);
+                    Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name]);
                 if push_result.is_err() {
                     eprintln!("Error pushing changes");
                     std::process::exit(1);

@@ -18,9 +18,14 @@ impl Syscmd {
         // list option command
 
         if args.list {
-            // list the packages needs to be updated for both
-            let _ = Execute::exe("pacman", &["-Qu", "--color=always"]);
-            let _ = Execute::exe("yay", &["-Qu", "--color=always"]);
+            match (
+                Execute::exe("pacman", &["-Qu", "--color=always"]),
+                Execute::exe("yay", &["-Qu", "--color=always"]),
+            ) {
+                (Ok(_), Ok(_)) => {}
+                (Err(e), _) => eprintln!("{}", e),
+                (_, Err(e)) => eprintln!("{}", e),
+            }
         }
 
         // update command
@@ -51,7 +56,10 @@ impl Syscmd {
 
         // weight option command
         if args.weight {
-            let _ = Execute::exe("du", &["-h", "--max-depth=1", ".", "--time"]);
+            match Execute::exe("du", &["-h", "--max-depth=1", ".", "--time"]) {
+                Ok(_) => {}
+                Err(e) => eprintln!("{}", e),
+            }
         }
 
         // delete option command

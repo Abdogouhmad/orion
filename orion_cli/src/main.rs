@@ -5,7 +5,7 @@ use cli::{filemanager::FileCreate, gitcli::Commands, sysflow::Syscmd};
 
 /// Whisper CLI tool meant to minimize the amount of written command line in the terminal.
 #[derive(Parser, Debug)]
-#[command(version = "2.3.0", about, long_about, styles=cli_style())]
+#[command(version = "2.3.1", about, long_about, styles=cli_style())]
 pub struct Sys {
     /// List packages that needs to be updated
     #[arg(short, long)]

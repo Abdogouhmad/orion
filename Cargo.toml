@@ -5,7 +5,7 @@ resolver = "2"
 
 [workspace.package]
 description = "Orion is a CLI tool that intends to minimize the amount of written command line within the console"
-version = "2.3.0"
+version = "2.3.1"
 edition = "2021"
 authors = ["div-styl"]
 readme = "README.md"
