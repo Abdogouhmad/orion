@@ -18,6 +18,8 @@ impl GitTool {
             "Docs are updated 📚",
             "Code is styled 🫠",
             "Codebase is refactored 🏭",
+            "Optimize the code",
+            "Clean the code",
             "Test is updated 🤖",
             "Other changes🙂",
             "Customized Commit 😎",
