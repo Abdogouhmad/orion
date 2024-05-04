@@ -1,6 +1,5 @@
-use std::process::exit;
-
 use commandcrafter::{color::Col, execute::Execute, filestore::Filestore};
+use std::process::exit;
 
 pub fn arch_update(name: &str) {
     let pac_flag = ["pacman", "-Syu", "--noconfirm"];
@@ -35,6 +34,5 @@ pub fn arch_update(name: &str) {
     let _ = [
         Execute::run("paccache", &["-ru"]),
         Execute::run("sudo", &["pacman", "-Sc"]),
-        Execute::run("yay", &["-Sc"]),
     ];
 }

@@ -1,12 +1,6 @@
 use commandcrafter::{color::Col, execute::Execute};
 use std::{env, fs, path::Path, process};
 
-// TODO: create commands like duf for disk size
-// TODO: check if the command exists in path /usr/bin/duf
-// TODO: not then provide github link for duf telling to install
-// TODO: du for measuring the size of files and folders within the range of current dir
-// if any error print it
-
 pub enum LinuxCmd {
     Duf,
 }
@@ -50,7 +44,7 @@ impl LinuxCmd {
         if !Path::exists(duf) {
             eprintln!("go download duf: https://github.com/muesli/duf");
         } else {
-            let _ = Execute::exe("duf", &["--all"]);
+            let _ = Execute::run("duf", &["--all"]);
         }
     }
 }
