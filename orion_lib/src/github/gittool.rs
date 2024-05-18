@@ -12,6 +12,7 @@ impl GitTool {
     /// the changes to the local repository and pushes them to the remote repository.
     pub fn apply_push() {
         let variety_commits = vec![
+            "Customized Commit 😎",
             "New Improvement to the code base 🚀",
             "Working on new feature 👷‍♂️",
             "Bug is Fix 🐛",
@@ -22,7 +23,6 @@ impl GitTool {
             "Clean the code",
             "Test is updated 🤖",
             "Other changes🙂",
-            "Customized Commit 😎",
         ];
         // select option
         let selected_commit = Select::new("Select a commit type", variety_commits).prompt();
