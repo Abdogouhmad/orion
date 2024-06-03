@@ -1,5 +1,7 @@
 use commandcrafter::{color::Col, execute::Execute};
+use git2::{Cred, RemoteCallbacks};
 use inquire::{Confirm, InquireError, Select, Text};
+use std::{env, path::Path};
 
 /// A struct representing a set of Git tools.
 pub struct GitTool;
@@ -19,9 +21,9 @@ impl GitTool {
             "Docs are updated 📚",
             "Code is styled 🫠",
             "Codebase is refactored 🏭",
-            "Optimize the code",
-            "Clean the code",
-            "Test is updated 🤖",
+            "The code is optimized :smile:",
+            "The Code is cleaned",
+            "Updating tests 🤖",
             "Other changes🙂",
         ];
         // select option
@@ -76,32 +78,64 @@ impl GitTool {
     pub fn apply_clone() {
         let username = Text::new("Enter the owner of repo: ").prompt();
         let repo = Text::new("Enter the name of the repo: ").prompt();
-        let depth = Text::new("Enter the depth of cloning: ")
-            .with_default("0")
-            .prompt_skippable();
+        let repo_path = Text::new("Enter The path where the repo to be cloned: ").prompt();
+        let mut callbacks = RemoteCallbacks::new();
+        callbacks.credentials(|_url, username_from_url, _allowed_types| {
+            Cred::ssh_key(
+                username_from_url.unwrap(),
+                None,
+                Path::new(&format!("{}/.ssh/id_rsa", env::var("HOME").unwrap())),
+                None,
+            )
+        });
 
-        if let (Ok(username), Ok(repo), Ok(depth)) = (username, repo, depth) {
-            let clonefmt = format!("git@github.com:{}/{}.git", username, repo);
-            let mut clone_pattern = vec!["clone"];
+        // Prepare fetch options.
+        let mut fo = git2::FetchOptions::new();
+        fo.remote_callbacks(callbacks);
 
-            // Only add depth option if depth is provided and greater than 0
-            if let Some(depth) = depth.as_deref() {
-                let depth_int: usize = depth.parse().unwrap_or(0);
-                if depth_int > 0 {
-                    clone_pattern.push("--depth");
-                    clone_pattern.push(depth);
+        // Prepare builder.
+        let mut builder = git2::build::RepoBuilder::new();
+        builder.fetch_options(fo);
+
+        // format the clone
+        if let (Ok(username), Ok(repo), Ok(repo_path)) = (username, repo, repo_path) {
+            let clone_fmt = format!("git@github.com:{}/{}.git", username, repo);
+            // Clone the project.
+            let rst = builder.clone(&clone_fmt, Path::new(&repo_path));
+            match rst {
+                Ok(_) => println!("{}", Col::Green.print_col("Clone successful")),
+                Err(e) => {
+                    eprintln!("{}", Col::Red.print_col(&format!("Clone failed: {}", e)));
+                    std::process::exit(1);
                 }
             }
-
-            clone_pattern.push(&clonefmt);
-
-            let res = Execute::exe("git", &clone_pattern);
-            if res.is_ok() {
-                println!("{}", Col::Green.print_col("Clone the repo well"))
-            } else if res.is_err() {
-                println!("{}", Col::Red.print_col("Clone the repo didn't go well"))
-            }
         }
+        // let depth = Text::new("Enter the depth of cloning: ")
+        //     .with_default("0")
+        //     .prompt_skippable();
+
+        // if let (Ok(username), Ok(repo), Ok(depth)) = (username, repo, depth) {
+        //     let clonefmt = format!("git@github.com:{}/{}.git", username, repo);
+        //     let mut clone_pattern = vec!["clone"];
+
+        //     // Only add depth option if depth is provided and greater than 0
+        //     if let Some(depth) = depth.as_deref() {
+        //         let depth_int: usize = depth.parse().unwrap_or(0);
+        //         if depth_int > 0 {
+        //             clone_pattern.push("--depth");
+        //             clone_pattern.push(depth);
+        //         }
+        //     }
+
+        //     clone_pattern.push(&clonefmt);
+
+        //     let res = Execute::exe("git", &clone_pattern);
+        //     if res.is_ok() {
+        //         println!("{}", Col::Green.print_col("Clone the repo well"))
+        //     } else if res.is_err() {
+        //         println!("{}", Col::Red.print_col("Clone the repo didn't go well"))
+        //     }
+        //}
     }
 
     /// Helper function to push changes to the remote repository.
