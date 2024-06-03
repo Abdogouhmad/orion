@@ -43,7 +43,7 @@ impl FileCreate {
                 match name_of_project {
                     Ok(name) => {
                         // let cargo_flags = ["--vcs", "none", &ty_name];
-                        let _ = Execute::run("cargo", &["new", &name, "--vcs", "none", &ty_name]);
+                        let _ = Execute::run("cargo", &["new", &name, "--vcs", "none", ty_name]);
                     }
                     Err(_) => eprintln!("smthg went wrong"),
                 }

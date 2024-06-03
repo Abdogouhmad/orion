@@ -130,7 +130,7 @@ impl GitTool {
                 }
 
                 // commit the changes
-                let commit_result = Execute::exe("git", &["commit", "-m", &commit]);
+                let commit_result = Execute::exe("git", &["commit", "-m", commit]);
                 if let Err(err) = commit_result {
                     eprintln!("Error committing changes: {:?}", err);
                     std::process::exit(1);
