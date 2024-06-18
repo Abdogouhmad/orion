@@ -137,9 +137,8 @@ impl GitTool {
                 let repo = Repository::open("./").expect("failed to open");
                 // get the index
                 let mut indx = repo.index().expect("Can't get the index file");
-                let _ = indx.add_all(["*"].iter(), IndexAddOption::DEFAULT, None);
-                let add_result = indx.write();
-                if let Err(err) = add_result {
+                let _ = indx.add_all(["."].iter(), IndexAddOption::DEFAULT, None);
+                if let Err(err) = indx.write() {
                     eprintln!("Error adding changes: {:?}", err);
                     std::process::exit(1);
                 }
