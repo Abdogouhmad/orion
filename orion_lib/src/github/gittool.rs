@@ -161,7 +161,7 @@ impl GitTool {
                     Some("HEAD"),
                     &signature,
                     &signature,
-                    &commit,
+                    commit,
                     &tree,
                     &[&parent_commit],
                 );
