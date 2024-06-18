@@ -1,5 +1,5 @@
 use commandcrafter::{color::Col, execute::Execute};
-use git2::{Cred, RemoteCallbacks};
+use git2::{Cred, IndexAddOption, RemoteCallbacks, Repository};
 use inquire::{Confirm, InquireError, Select, Text};
 use std::{env, path::Path};
 
@@ -16,6 +16,7 @@ impl GitTool {
         let variety_commits = vec![
             "Customized Commit 😎",
             "New Improvement to the code base 🚀",
+            "README updated",
             "Working on new feature 👷‍♂️",
             "Bug is Fix 🐛",
             "Docs are updated 📚",
@@ -131,7 +132,13 @@ impl GitTool {
         match commit {
             Ok(commit) => {
                 // track the changes :)
-                let add_result = Execute::exe("git", &["add", "."]);
+                // let add_result = Execute::exe("git", &["add", "."]);
+                // open a repo
+                let repo = Repository::open("./").expect("failed to open");
+                // get the index
+                let mut indx = repo.index().expect("Can't get the index file");
+                let _ = indx.add_all(["*"].iter(), IndexAddOption::DEFAULT, None);
+                let add_result = indx.write();
                 if let Err(err) = add_result {
                     eprintln!("Error adding changes: {:?}", err);
                     std::process::exit(1);
