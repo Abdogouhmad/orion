@@ -1,5 +1,5 @@
 use commandcrafter::{color::Col, execute::Execute};
-use git2::{Cred, IndexAddOption, RemoteCallbacks, Repository};
+use git2::{Cred, IndexAddOption, RemoteCallbacks, Repository, Signature};
 use inquire::{Confirm, InquireError, Select, Text};
 use std::{env, path::Path};
 
@@ -131,36 +131,54 @@ impl GitTool {
     fn push_changes(commit: &Result<String, InquireError>) {
         match commit {
             Ok(commit) => {
-                // track the changes :)
-                // let add_result = Execute::exe("git", &["add", "."]);
                 // open a repo
                 let repo = Repository::open("./").expect("failed to open");
                 // get the index
-                let mut indx = repo.index().expect("Can't get the index file");
-                let _ = indx.add_all(["."].iter(), IndexAddOption::DEFAULT, None);
-                if let Err(err) = indx.write() {
+                let mut index = repo.index().expect("Can't get the index file");
+                let _ = index.add_all(["."].iter(), IndexAddOption::DEFAULT, None);
+                if let Err(err) = index.write() {
                     eprintln!("Error adding changes: {:?}", err);
                     std::process::exit(1);
                 }
 
                 // commit the changes
-                let commit_result = Execute::exe("git", &["commit", "-m", commit]);
+                let tree_id = index.write_tree().expect("Failed to write tree");
+                let tree = repo.find_tree(tree_id).expect("Failed to find tree");
+                let head = repo.head().expect("Failed to get HEAD");
+                let parent_commit = head.peel_to_commit().expect("Failed to get commit");
+
+                // Retrieve signature from config
+                let config = repo.config().expect("Failed to get config");
+                let name = config
+                    .get_string("user.name")
+                    .expect("Failed to get user.name");
+                let email = config
+                    .get_string("user.email")
+                    .expect("Failed to get user.email");
+                let signature = Signature::now(&name, &email).expect("Failed to create signature");
+
+                let commit_result = repo.commit(
+                    Some("HEAD"),
+                    &signature,
+                    &signature,
+                    &commit,
+                    &tree,
+                    &[&parent_commit],
+                );
                 if let Err(err) = commit_result {
                     eprintln!("Error committing changes: {:?}", err);
                     std::process::exit(1);
                 }
 
-                // get the branch the name :/
-                let branch_result = Execute::run("git", &["rev-parse", "--abbrev-ref", "HEAD"]);
-                let branch_name = match branch_result {
-                    Ok(bytes) => String::from_utf8_lossy(&bytes).trim().to_string(),
-                    Err(err) => {
-                        eprintln!("Error getting branch name: {:?}", err);
-                        std::process::exit(1);
-                    }
-                };
+                // get the branch name
+                let branch_name = repo
+                    .head()
+                    .expect("Failed to get HEAD")
+                    .shorthand()
+                    .expect("Failed to get branch name")
+                    .to_string();
 
-                // push the branch head name :')
+                // push the branch head name
                 let push_result =
                     Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name]);
                 if push_result.is_err() {
