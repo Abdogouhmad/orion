@@ -1,8 +1,8 @@
+use anyhow::{Context, Result};
 use commandcrafter::{color::Col, execute::Execute};
 use git2::{Cred, IndexAddOption, RemoteCallbacks, Repository, Signature};
 use inquire::{Confirm, InquireError, Select, Text};
 use std::{env, path::Path};
-
 /// A struct representing a set of Git tools.
 pub struct GitTool;
 
@@ -35,8 +35,10 @@ impl GitTool {
                 "Customized Commit 😎" => {
                     let customize_commit = Text::new("Please Enter Commit Messege 😎:").prompt();
                     GitTool::push_changes(&customize_commit)
+                        .expect("The Commit functionality Failed See how to fix --->");
                 }
-                _ => GitTool::push_changes(&Ok(commit_type.to_string())),
+                _ => GitTool::push_changes(&Ok(commit_type.to_string()))
+                    .expect("The Commit functionality Failed See how to fix --->"),
             },
             Err(e) => eprintln!("Error: {}", e),
         }
@@ -83,7 +85,7 @@ impl GitTool {
         let mut callbacks = RemoteCallbacks::new();
         callbacks.credentials(|_url, username_from_url, _allowed_types| {
             Cred::ssh_key(
-                username_from_url.unwrap(),
+                username_from_url.unwrap_or("git"),
                 None,
                 Path::new(&format!("{}/.ssh/id_rsa", env::var("HOME").unwrap())),
                 None,
@@ -128,66 +130,75 @@ impl GitTool {
     /// # Panics
     ///
     /// This method panics if any of the git commands fail during execution.
-    fn push_changes(commit: &Result<String, InquireError>) {
+    fn push_changes(commit: &Result<String, InquireError>) -> anyhow::Result<()> {
         match commit {
             Ok(commit) => {
-                // open a repo at the root
-                let repo = Repository::open("./").expect("failed to open");
-                // get the index
-                let mut index = repo.index().expect("Can't get the index file");
-                let _ = index.add_all(["."].iter(), IndexAddOption::DEFAULT, None);
-                if let Err(err) = index.write() {
-                    eprintln!("Error adding changes: {:?}", err);
-                    std::process::exit(1);
-                }
+                // Open the repository
+                let repo = Repository::open("./")
+                    .context("Push in the root of your project in order to get index")?;
 
-                // commit the changes
-                let tree_id = index.write_tree().expect("Failed to write tree");
-                let tree = repo.find_tree(tree_id).expect("Failed to find tree");
-                let head = repo.head().expect("Failed to get HEAD");
-                let parent_commit = head.peel_to_commit().expect("Failed to get commit");
+                // Get the index
+                let mut index = repo.index().context("Failed to get the index file")?;
+
+                // Add all changes to the index
+                index.add_all(["."].iter(), IndexAddOption::DEFAULT, None)?;
+
+                // Write the index to disk
+                index.write_tree()?;
+
+                // Commit the changes
+                let tree_id = index.write_tree()?;
+                let tree = repo.find_tree(tree_id)?;
+                let head = repo.head()?.peel_to_commit()?;
 
                 // Retrieve signature from config
-                let config = repo.config().expect("Failed to get config");
-                let name = config
-                    .get_string("user.name")
-                    .expect("Failed to get user.name");
-                let email = config
-                    .get_string("user.email")
-                    .expect("Failed to get user.email");
-                let signature = Signature::now(&name, &email).expect("Failed to create signature");
+                let config = repo.config().context("Can't find ~/.gitconfig")?;
+                let name = config.get_string("user.name").context("No user set")?;
+                let email = config.get_string("user.email").context("No email set")?;
+                let signature = Signature::now(&name, &email).context("Null config")?;
 
-                let commit_result = repo.commit(
+                // Commit the changes
+                repo.commit(
                     Some("HEAD"),
                     &signature,
                     &signature,
                     commit,
                     &tree,
-                    &[&parent_commit],
-                );
-                if let Err(err) = commit_result {
-                    eprintln!("Error committing changes: {:?}", err);
-                    std::process::exit(1);
-                }
+                    &[&head],
+                )
+                .context("Can't commit at the moment")?;
 
-                // get the branch name
-                let branch_name = repo
-                    .head()
-                    .expect("Failed to get HEAD")
-                    .shorthand()
-                    .expect("Failed to get branch name")
-                    .to_string();
+                // Get the branch name
+                let branch_name = repo.head()?.shorthand().unwrap_or("HEAD").to_string();
+                // find remote
+                let remote = repo
+                    .find_remote("origin")
+                    .context("Can't find remote origin");
+                // create a call back
+                let mut callbacks = RemoteCallbacks::new();
+                callbacks.credentials(|_url, username_from_url, _allowed_types| {
+                    Cred::ssh_key(
+                        username_from_url.unwrap_or("git"),
+                        None,
+                        Path::new(&format!("{}/.ssh/id_rsa", env::var("HOME").unwrap())),
+                        None,
+                    )
+                });
+                // create a git option
+                let mut opts = git2::PushOptions::new();
+                opts.remote_callbacks(callbacks);
+                remote?
+                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
+                    .context("Failed to push to remote")?;
 
-                // push the branch head name
-                let push_result =
-                    Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name]);
-                if push_result.is_err() {
-                    eprintln!("Error pushing changes");
-                    std::process::exit(1);
-                }
-                println!("{}", Col::print_col(&Col::Magenta, "Code is pushed"));
+                // println!("Code is pushed successfully");
+                // // Push changes to remote
+                // Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name])?;
+
+                println!("{}", Col::print_col(&Col::Green, "Code is pushed"));
             }
-            Err(e) => println!("{e}"),
+            Err(e) => println!("{}", e),
         }
+        Ok(())
     }
 }
