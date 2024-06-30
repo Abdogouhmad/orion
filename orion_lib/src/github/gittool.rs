@@ -131,7 +131,7 @@ impl GitTool {
     fn push_changes(commit: &Result<String, InquireError>) {
         match commit {
             Ok(commit) => {
-                // open a repo
+                // open a repo at the root
                 let repo = Repository::open("./").expect("failed to open");
                 // get the index
                 let mut index = repo.index().expect("Can't get the index file");
