@@ -1,5 +1,4 @@
 # Orion
-
 ## Overview
 
 Orion is a command-line interface tool built with Rust,
