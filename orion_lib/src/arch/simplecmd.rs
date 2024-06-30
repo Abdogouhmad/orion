@@ -43,8 +43,10 @@ impl LinuxCmd {
         let duf = Path::new("/usr/bin/duf");
         if !Path::exists(duf) {
             eprintln!("go download duf: https://github.com/muesli/duf");
-        } else {
-            let _ = Execute::run("duf", &["--all"]);
+        }
+        let rst = Execute::exe("duf", &["--all"]);
+        if rst.is_err() {
+            eprintln!("something went wrong")
         }
     }
 }
