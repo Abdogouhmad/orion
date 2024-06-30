@@ -196,6 +196,7 @@ impl GitTool {
                 // Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name])?;
 
                 println!("{}", Col::print_col(&Col::Green, "Code is pushed"));
+                Execute::exe("git", &["status"])?;
             }
             Err(e) => println!("{}", e),
         }
