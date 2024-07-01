@@ -188,7 +188,7 @@ impl GitTool {
                 let mut opts = git2::PushOptions::new();
                 opts.remote_callbacks(callbacks);
                 remote?
-                    .push(&[branch_name], Some(&mut opts))
+                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
                     .context("Failed to push to remote")?;
 
                 println!("{}", Col::print_col(&Col::Green, "Code is pushed"));
@@ -199,6 +199,5 @@ impl GitTool {
         Ok(())
     }
 }
-// println!("Code is pushed successfully");
 // // Push changes to remote
 // Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name])?;
