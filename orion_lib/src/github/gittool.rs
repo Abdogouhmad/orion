@@ -187,6 +187,7 @@ impl GitTool {
                 // create a git option
                 let mut opts = git2::PushOptions::new();
                 opts.remote_callbacks(callbacks);
+                // push the changes
                 remote?
                     .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
                     .context("Failed to push to remote")?;
