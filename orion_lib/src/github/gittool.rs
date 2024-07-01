@@ -193,7 +193,6 @@ impl GitTool {
                     .context("Failed to push to remote")?;
 
                 println!("{}", Col::print_col(&Col::Green, "Code is pushed"));
-                Execute::exe("git", &["status"])?;
             }
             Err(e) => println!("{}", e),
         }
