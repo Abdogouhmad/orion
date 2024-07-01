@@ -199,5 +199,4 @@ impl GitTool {
         Ok(())
     }
 }
-// // Push changes to remote
 // Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name])?;
