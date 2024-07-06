@@ -14,7 +14,7 @@ impl GitTool {
     /// the changes to the local repository and pushes them to the remote repository.
     pub fn apply_push() {
         let variety_commits = vec![
-            "Customized Commit 😎",
+            "Customized Commit ☺️",
             "New Improvement to the code base 🚀",
             "README updated",
             "Working on new feature 👷‍♂️",
