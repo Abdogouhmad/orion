@@ -168,7 +168,7 @@ impl GitTool {
                 .context("Can't commit at the moment")?;
 
                 // Get the branch name
-                // let branch_name = repo.head()?.shorthand().unwrap_or("HEAD").to_string();
+                let branch_name = repo.head()?.shorthand().unwrap_or("HEAD").to_string();
                 // Execute the git push command
                 // let result = Execute::exe("git", &["push", "origin", &branch_name]);
 
@@ -180,9 +180,9 @@ impl GitTool {
                 //     ),
                 // }
                 // find remote
-                // let remote = repo
-                //     .find_remote("origin")
-                //     .context("Can't find remote origin");
+                let remote = repo
+                    .find_remote("origin")
+                    .context("Can't find remote origin");
                 // create a call back
                 let mut callbacks = RemoteCallbacks::new();
                 callbacks.credentials(|_url, username_from_url, _allowed_types| {
@@ -197,9 +197,9 @@ impl GitTool {
                 let mut opts = git2::PushOptions::new();
                 opts.remote_callbacks(callbacks);
                 // push the changes
-                // remote?
-                //     .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
-                //     .context("Failed to push to remote")?;
+                remote?
+                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
+                    .context("Failed to push to remote")?;
             }
             Err(e) => println!("{}", e),
         }
