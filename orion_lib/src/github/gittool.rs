@@ -140,7 +140,7 @@ impl GitTool {
                 let mut index = repo.index().context("Failed to get the index file")?;
 
                 // Add all changes to the index
-                index.add_all(["*"].iter(), IndexAddOption::DEFAULT, None)?;
+                index.add_all(["*"].iter(), IndexAddOption::DEFAULT, None)?; // do commit
 
                 // Write the index to disk
                 index.write_tree()?;
