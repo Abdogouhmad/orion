@@ -179,13 +179,6 @@ impl GitTool {
                 // Execute the git push command
                 // let result = Execute::exe("git", &["push", "origin", &branch_name]);
 
-                // match result {
-                //     Ok(_) => println!("{}", Col::print_col(&Col::Green, "Code is pushed")),
-                //     Err(e) => println!(
-                //         "{}",
-                //         Col::print_col(&Col::Red, &format!("Failed to push code: {}", e))
-                //     ),
-                // }
                 // find remote
                 let remote = repo
                     .find_remote("origin")
@@ -204,9 +197,15 @@ impl GitTool {
                 let mut opts = git2::PushOptions::new();
                 opts.remote_callbacks(callbacks);
                 // push the changes
-                remote?
-                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
-                    .context("Failed to push to remote")?;
+                let result =
+                    remote?.push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts));
+                match result {
+                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Code is pushed")),
+                    Err(e) => println!(
+                        "{}",
+                        Col::print_col(&Col::Red, &format!("Failed to push code: {}", e))
+                    ),
+                }
             }
             Err(e) => println!("{}", e),
         }
