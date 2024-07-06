@@ -14,18 +14,17 @@ impl GitTool {
     /// the changes to the local repository and pushes them to the remote repository.
     pub fn apply_push() {
         let variety_commits = vec![
-            "Customized Commit ☺️",
+            "Customized Commit 😎",
             "New Improvement to the code base 🚀",
-            "README updated",
+            "README is updated",
             "Working on new feature 👷‍♂️",
-            "Bug is Fix 🐛",
+            "Bug is Fixed 🐛",
             "Docs are updated 📚",
             "Code is styled 🫠",
-            "Codebase is refactored 🏭",
-            "The code is optimized :smile:",
-            "The Code is cleaned",
-            "Updating tests 🤖",
-            "Other changes🙂",
+            "Refectoring🏭",
+            "Optimizing 🌚",
+            "Updating tests 😩",
+            "Other changes 🫤",
         ];
         // select option
         let selected_commit = Select::new("Select a commit type", variety_commits).prompt();
