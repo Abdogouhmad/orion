@@ -140,15 +140,16 @@ impl GitTool {
                 let mut index = repo.index().context("Failed to get the index file")?;
 
                 // Add all changes to the index
-                index.add_all(["*"].iter(), IndexAddOption::DEFAULT, None)?; // do commit
-
-                // Write the index to disk
-                index.write_tree()?;
-
+                index.add_all(["."].iter(), IndexAddOption::DEFAULT, None)?;
+                if let Err(err) = index.write() {
+                    eprintln!("Error adding changes: {:?}", err);
+                    std::process::exit(1);
+                }
                 // Commit the changes
                 let tree_id = index.write_tree()?;
                 let tree = repo.find_tree(tree_id)?;
-                let head = repo.head()?.peel_to_commit()?;
+                let head = repo.head()?;
+                let parent_commit = head.peel_to_commit()?;
 
                 // Retrieve signature from config
                 let config = repo.config().context("Can't find ~/.gitconfig")?;
@@ -163,12 +164,18 @@ impl GitTool {
                     &signature,
                     commit,
                     &tree,
-                    &[&head],
+                    &[&parent_commit],
                 )
                 .context("Can't commit at the moment")?;
 
                 // Get the branch name
-                // let branch_name = repo.head()?.shorthand().unwrap_or("HEAD").to_string();
+                let branch_name = repo
+                    .head()
+                    .expect("Failed to get HEAD")
+                    .shorthand()
+                    .expect("Failed to get branch name")
+                    .to_string();
+
                 // Execute the git push command
                 // let result = Execute::exe("git", &["push", "origin", &branch_name]);
 
@@ -180,9 +187,9 @@ impl GitTool {
                 //     ),
                 // }
                 // find remote
-                // let remote = repo
-                //     .find_remote("origin")
-                //     .context("Can't find remote origin");
+                let remote = repo
+                    .find_remote("origin")
+                    .context("Can't find remote origin");
                 // create a call back
                 let mut callbacks = RemoteCallbacks::new();
                 callbacks.credentials(|_url, username_from_url, _allowed_types| {
@@ -197,9 +204,9 @@ impl GitTool {
                 let mut opts = git2::PushOptions::new();
                 opts.remote_callbacks(callbacks);
                 // push the changes
-                // remote?
-                //     .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
-                //     .context("Failed to push to remote")?;
+                remote?
+                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
+                    .context("Failed to push to remote")?;
             }
             Err(e) => println!("{}", e),
         }
