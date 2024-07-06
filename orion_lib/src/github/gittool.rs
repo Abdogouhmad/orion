@@ -169,27 +169,37 @@ impl GitTool {
 
                 // Get the branch name
                 let branch_name = repo.head()?.shorthand().unwrap_or("HEAD").to_string();
+                // Execute the git push command
+                let result = Execute::exe("git", &["push", "origin", &branch_name]);
+
+                match result {
+                    Ok(_) => println!("{}", Col::print_col(&Col::Green, "Code is pushed")),
+                    Err(e) => println!(
+                        "{}",
+                        Col::print_col(&Col::Red, &format!("Failed to push code: {}", e))
+                    ),
+                }
                 // find remote
-                let remote = repo
-                    .find_remote("origin")
-                    .context("Can't find remote origin");
+                // let remote = repo
+                //     .find_remote("origin")
+                //     .context("Can't find remote origin");
                 // create a call back
-                let mut callbacks = RemoteCallbacks::new();
-                callbacks.credentials(|_url, username_from_url, _allowed_types| {
-                    Cred::ssh_key(
-                        username_from_url.unwrap_or("git"),
-                        None,
-                        Path::new(&format!("{}/.ssh/id_ed25519", env::var("HOME").unwrap())), // change the id
-                        None,
-                    )
-                });
+                // let mut callbacks = RemoteCallbacks::new();
+                // callbacks.credentials(|_url, username_from_url, _allowed_types| {
+                //     Cred::ssh_key(
+                //         username_from_url.unwrap_or("git"),
+                //         None,
+                //         Path::new(&format!("{}/.ssh/id_ed25519", env::var("HOME").unwrap())), // change the id
+                //         None,
+                //     )
+                // });
                 // create a git option
-                let mut opts = git2::PushOptions::new();
-                opts.remote_callbacks(callbacks);
+                // let mut opts = git2::PushOptions::new();
+                // opts.remote_callbacks(callbacks);
                 // push the changes
-                remote?
-                    .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
-                    .context("Failed to push to remote")?;
+                // remote?
+                //     .push(&[&format!("refs/heads/{}", branch_name)], Some(&mut opts))
+                //     .context("Failed to push to remote")?;
 
                 println!("{}", Col::print_col(&Col::Green, "Code is pushed"));
             }
