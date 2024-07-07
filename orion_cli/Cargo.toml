@@ -14,6 +14,7 @@ name = "orn"
 path = "src/main.rs"
 
 [dependencies]
+anyhow = "1.0.86"
 clap = { version = "4.5.1", features = ["derive", "cargo"] }
 commandcrafter = "0.4.1"
 inquire = "0.7.1"

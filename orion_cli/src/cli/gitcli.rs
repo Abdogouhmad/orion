@@ -27,21 +27,24 @@ impl Commands {
     pub fn git_cli() {
         let args = Sys::parse();
         if let Some(command) = args.command {
-            Commands::apply_command(&command);
+            let _ = Commands::apply_command(&command);
         }
-        // match args.command {
-        //     Some(command) => Commands::apply_command(&command),
-        //     None => eprintln!("Out of range"),
-        // }
     }
-    fn apply_command(command: &Commands) {
+    fn apply_command(command: &Commands) -> Result<(), anyhow::Error> {
         match command {
             Commands::Clone => GitTool::apply_clone(),
-            Commands::Push => GitTool::apply_push(),
-            Commands::Release => GitTool::apply_release(),
+            Commands::Push => {
+                GitTool::apply_push();
+                Ok(())
+            }
+            Commands::Release => {
+                GitTool::apply_release();
+                Ok(())
+            }
             Commands::Zip { source, output } => {
                 // Call apply_zip with references to source and output
                 let _ = ZipF::apply_zip(source, output);
+                Ok(()) // Ensure this branch returns Ok(())
             }
         }
     }

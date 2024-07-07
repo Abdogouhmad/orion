@@ -77,43 +77,65 @@ impl GitTool {
     /// name they want to clone. Additionally, it allows the user to specify the depth
     /// of the clone operation. It then clones the specified repository to the local
     /// machine using the provided parameters.
-    pub fn apply_clone() {
-        let username = Text::new("Enter the owner of repo: ").prompt();
-        let repo = Text::new("Enter the name of the repo: ").prompt();
-        let repo_path = Text::new("Enter The path where the repo to be cloned: ").prompt();
+    pub fn apply_clone() -> anyhow::Result<()> {
+        let username = Text::new("Enter the owner of repo: ").prompt()?;
+        let repo = Text::new("Enter the name of the repo: ").prompt()?;
+        let repo_path = Text::new("Enter The path where the repo to be cloned: ").prompt()?;
+
+        // Check if SSH key exists
+        let ssh_key_path = format!("{}/.ssh/id_ed25519", env::var("HOME")?);
+        let use_ssh = Path::new(&ssh_key_path).exists();
+
+        // Set up callbacks for authentication
         let mut callbacks = RemoteCallbacks::new();
-        callbacks.credentials(|_url, username_from_url, _allowed_types| {
-            Cred::ssh_key(
-                username_from_url.unwrap_or("git"),
-                None,
-                Path::new(&format!("{}/.ssh/id_ed25519", env::var("HOME").unwrap())),
-                None,
-            )
+        callbacks.credentials(move |_url, username_from_url, _allowed_types| {
+            if use_ssh && _allowed_types.contains(git2::CredentialType::SSH_KEY) {
+                Cred::ssh_key(
+                    username_from_url.unwrap_or("git"),
+                    None,
+                    Path::new(&ssh_key_path),
+                    None,
+                )
+            } else if _allowed_types.contains(git2::CredentialType::USER_PASS_PLAINTEXT) {
+                Cred::credential_helper(
+                    &git2::Config::open_default().unwrap(),
+                    _url,
+                    username_from_url,
+                )
+            } else if _allowed_types.contains(git2::CredentialType::DEFAULT) {
+                Cred::default()
+            } else {
+                Err(git2::Error::from_str("no authentication available"))
+            }
         });
 
-        // Prepare fetch options.
+        // Prepare fetch options
         let mut fo = git2::FetchOptions::new();
         fo.remote_callbacks(callbacks);
 
-        // Prepare builder.
+        // Prepare builder
         let mut builder = git2::build::RepoBuilder::new();
         builder.fetch_options(fo);
 
-        // format the clone
-        if let (Ok(username), Ok(repo), Ok(repo_path)) = (username, repo, repo_path) {
-            let clone_fmt = format!("git@github.com:{}/{}.git", username, repo);
-            // Clone the project.
-            let rst = builder.clone(&clone_fmt, Path::new(&repo_path));
-            match rst {
-                Ok(_) => println!("{}", Col::Green.print_col("Clone successful")),
-                Err(e) => {
-                    eprintln!("{}", Col::Red.print_col(&format!("Clone failed: {}", e)));
-                    std::process::exit(1);
-                }
+        // Determine the clone URL
+        let clone_fmt = if use_ssh {
+            format!("git@github.com:{}/{}.git", username, repo)
+        } else {
+            format!("https://github.com/{}/{}.git", username, repo)
+        };
+
+        // Clone the project
+        match builder.clone(&clone_fmt, Path::new(&repo_path)) {
+            Ok(_) => {
+                println!("{}", Col::Green.print_col("Clone successful"));
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("{}", Col::Red.print_col(&format!("Clone failed: {}", e)));
+                std::process::exit(1);
             }
         }
     }
-
     /// Helper function to push changes to the remote repository.
     ///
     /// This method takes a commit message as input and performs the following steps:
