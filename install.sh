@@ -12,21 +12,21 @@ printcl() {
 
 install_orion() {
     printcl "${YELLOW}" "Installing The CLI into /usr/bin..."
-    sudo curl -L https://github.com/div-styl/orion/releases/download/2.3.0/orion -o /usr/bin/orion
-    sudo chmod +x /usr/bin/orion
-    printcl "${GREEN}" "Installed Successfully! Run the CLI with the command: orion -h"
+    sudo curl -L https://github.com/div-styl/orion/releases/download/2.4.0/orn -o /usr/bin/orn
+    sudo chmod +x /usr/bin/orn
+    printcl "${GREEN}" "Installed Successfully! Run the CLI with the command: orn -h"
 }
 
 uninstall_orion() {
     printcl "${YELLOW}" "Uninstalling The CLI from /usr/bin..."
-    sudo rm /usr/bin/orion
+    sudo rm /usr/bin/orn
     printcl "${GREEN}" "Uninstalled Successfully!"
 }
 
 printcl "${YELLOW}" "Choose an action:"
 printcl "${YELLOW}" "1: Install"
 printcl "${YELLOW}" "2: Uninstall"
-read -p "Enter your choice: " choice
+read -r -p "Enter your choice: " choice
 
 case "$choice" in
     1)
