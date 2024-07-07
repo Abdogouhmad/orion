@@ -20,7 +20,7 @@ zip:
 build:
 	@printf "${MAGENTA} Building the program...${NC}\n"
 	@$(RC) $(BP)
-	@sudo cp target/release/orion /usr/bin
+	@sudo cp target/release/orn /usr/bin
 
 clean:
 	@printf "${MAGENTA} Cleaning the program...${NC}\n"

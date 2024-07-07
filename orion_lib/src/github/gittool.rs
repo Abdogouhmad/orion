@@ -176,9 +176,6 @@ impl GitTool {
                     .expect("Failed to get branch name")
                     .to_string();
 
-                // Execute the git push command
-                // let result = Execute::exe("git", &["push", "origin", &branch_name]);
-
                 // find remote
                 let remote = repo
                     .find_remote("origin")
@@ -212,6 +209,3 @@ impl GitTool {
         Ok(())
     }
 }
-// test
-// cool
-// Execute::exe("git", &["push", "--set-upstream", "origin", &branch_name])?;

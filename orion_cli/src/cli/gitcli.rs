@@ -4,10 +4,10 @@ use orion_lib::{github::gittool::GitTool, zipper::zip::ZipF};
 
 #[derive(Parser, Debug)]
 pub enum Commands {
-    /// clone any repo use help Clone to know more 🫠
+    /// clone any repo use help Clone to know more
     #[clap(long_about = "clone any repo with username + repo's name and choose Full or 1")]
     Clone,
-    /// push the changes to the github 😃
+    /// push the changes to the github
     Push,
     /// create release tag through the shell command
     Release,
