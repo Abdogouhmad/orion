@@ -29,7 +29,7 @@ cargo install --git https://github.com/Abdogouhmad/orion
 To use Orion, follow the general format:
 
 ```bash
-orion [OPTIONS] [COMMAND].
+orn [OPTIONS] [COMMAND].
 ```
 
 For detailed usage instructions, refer to the help command: whispercli --help.
