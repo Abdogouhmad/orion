@@ -19,7 +19,9 @@ managing packages, measuring folder sizes, and handling Git operations.
 ## installation
 
 ```bash
-bash <(curl -sSL https://raw.githubusercontent.com/div-styl/orion/main/install.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/Abdogouhmad/orion/main/install.sh)
+# or
+cargo install --git https://github.com/Abdogouhmad/orion
 ```
 
 ## Usage
