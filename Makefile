@@ -10,7 +10,9 @@ BP = build --release
 CP = clean
 ZIP = r -- zip -s test -o testziped.zip
 run:
-	@printf "${MAGENTA} Running the program...${NC}\n"
+	@printf "${MAGENTA}Running the program...${NC}\n"
+	@echo ""
+	@sleep 2
 	@$(RC) $(RP)
 	
 zip:

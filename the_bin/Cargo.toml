@@ -1,0 +1,13 @@
+[package]
+name = "the_bin"
+description.workspace = true
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+readme.workspace = true
+repository.workspace = true
+[[bin]]
+name = "orn"
+path = "src/main.rs"
+[dependencies]
+orn = { path = "../the_lib", package = "the_lib"}
